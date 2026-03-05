@@ -1,0 +1,72 @@
+<!-- Template: v3-manager-campaign-sent -->
+<!-- Trigger: manager_campaign_sent -->
+<!-- Audience: Gestor -->
+
+<h1 style="text-align: center; font-family: 'Poppins', sans-serif;">📤 Campanha Enviada</h1>
+
+<p style="font-family: 'Poppins', sans-serif; color: #3F3F46;">
+  Olá, <strong style="color: #11181C;">{{ manager.name }}</strong>! A campanha foi enviada com sucesso para os membros selecionados.
+</p>
+
+<!-- Campaign Info -->
+<div style="background: linear-gradient(135deg, #4F46E5 0%, #6366F1 30%, #F29F40 100%); border-radius: 16px; padding: 28px; margin: 24px 0; text-align: center;">
+  <p style="font-size: 20px; font-weight: 700; color: #FFFFFF; margin: 0; font-family: 'Poppins', sans-serif;">
+    {{ campaign.name }}
+  </p>
+</div>
+
+<!-- Stats -->
+<div style="margin: 24px 0;">
+  <table role="presentation" cellpadding="0" cellspacing="0" width="100%">
+    <tr>
+      <td align="center" width="33%">
+        <div style="background-color: #EEF2FF; border-radius: 12px; padding: 16px;">
+          <p style="font-size: 28px; font-weight: 700; color: #4F46E5; margin: 0; font-family: 'Poppins', sans-serif;">{{ total_recipients }}</p>
+          <p style="font-size: 11px; color: #71717A; margin: 4px 0 0 0; font-family: 'Poppins', sans-serif;">Destinatários</p>
+        </div>
+      </td>
+      <td width="8"></td>
+      <td align="center" width="33%">
+        <div style="background-color: #FEF3C7; border-radius: 12px; padding: 16px;">
+          <p style="font-size: 28px; font-weight: 700; color: #F29F40; margin: 0; font-family: 'Poppins', sans-serif;">{{ points_per_member }}</p>
+          <p style="font-size: 11px; color: #71717A; margin: 4px 0 0 0; font-family: 'Poppins', sans-serif;">Pontos/Membro</p>
+        </div>
+      </td>
+      <td width="8"></td>
+      <td align="center" width="33%">
+        <div style="background-color: #F0FDF4; border-radius: 12px; padding: 16px;">
+          <p style="font-size: 28px; font-weight: 700; color: #22C55E; margin: 0; font-family: 'Poppins', sans-serif;">{{ total_points }}</p>
+          <p style="font-size: 11px; color: #71717A; margin: 4px 0 0 0; font-family: 'Poppins', sans-serif;">Pontos Totais</p>
+        </div>
+      </td>
+    </tr>
+  </table>
+</div>
+
+<!-- Details -->
+<div style="background-color: #F9FAFB; border-radius: 12px; padding: 20px; margin: 20px 0;">
+  <table role="presentation" cellpadding="0" cellspacing="0" width="100%">
+    {{#campaign.start_date}}
+    <tr>
+      <td style="padding: 6px 0; font-size: 14px; font-family: 'Poppins', sans-serif; color: #71717A;">📅 Início:</td>
+      <td style="padding: 6px 0; font-size: 14px; font-family: 'Poppins', sans-serif; text-align: right; color: #11181C; font-weight: 500;">{{ campaign.start_date }}</td>
+    </tr>
+    {{/campaign.start_date}}
+    {{#campaign.end_date}}
+    <tr>
+      <td style="padding: 6px 0; font-size: 14px; font-family: 'Poppins', sans-serif; color: #71717A;">🏁 Término:</td>
+      <td style="padding: 6px 0; font-size: 14px; font-family: 'Poppins', sans-serif; text-align: right; color: #11181C; font-weight: 500;">{{ campaign.end_date }}</td>
+    </tr>
+    {{/campaign.end_date}}
+    <tr>
+      <td style="padding: 6px 0; font-size: 14px; font-family: 'Poppins', sans-serif; color: #71717A;">📤 Enviada em:</td>
+      <td style="padding: 6px 0; font-size: 14px; font-family: 'Poppins', sans-serif; text-align: right; color: #11181C;">{{ sent_at }}</td>
+    </tr>
+  </table>
+</div>
+
+<div style="text-align: center; margin: 32px 0;">
+  <a href="{{ campaign_url }}" style="display: inline-block; padding: 14px 36px; background: linear-gradient(135deg, #4F46E5 0%, #6366F1 100%); color: #FFFFFF; text-decoration: none; border-radius: 12px; font-weight: 600; font-size: 15px; font-family: 'Poppins', sans-serif; box-shadow: 0 4px 14px rgba(79, 70, 229, 0.35);">
+    📊 Ver Campanha
+  </a>
+</div>

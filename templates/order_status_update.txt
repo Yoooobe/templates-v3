@@ -1,0 +1,18 @@
+📋 Atualização do Pedido
+
+Olá, {{ user.name }},
+
+O status do seu pedido foi atualizado:
+
+⚡ Novo Status: {{ new_status }}
+
+📋 Pedido: {{ order.number }}
+📅 Data do Pedido: {{ order.date }}
+
+💬 {{ status_message }}
+
+{{#order.tracking_url}}🚚 Rastrear Entrega: {{ order.tracking_url }}{{/order.tracking_url}}
+
+{{#action_url}}👉 Ver Detalhes do Pedido: {{ action_url }}{{/action_url}}
+
+Dúvidas? Entre em contato com nosso suporte.

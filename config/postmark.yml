@@ -1,0 +1,160 @@
+# =============================================================================
+# Postmark Configuration – Templates V3
+# =============================================================================
+
+postmark:
+  sender: "Yoobe <noreply@yoobe.me>"
+  message_stream: "outbound"
+  api_url: "https://api.postmarkapp.com"
+  template_prefix: "v3"
+  layout_alias: "v3-base-layout"
+
+# ─── Template Definitions ───────────────────────────────────────────────
+# Each template maps an alias to its source files and metadata
+
+templates:
+
+  # ─── Layout ─────────────────────────────────────────────────────────
+
+  v3-base-layout:
+    name: "V3 – Layout Base (Yoobe)"
+    type: "Layout"
+    html_file: "templates/layouts/base_layout.html"
+    text_file: "templates/layouts/base_layout.txt"
+
+  # ─── Gerais (Membro + Gestor) ──────────────────────────────────────
+
+  v3-welcome:
+    name: "V3 – Boas-vindas"
+    type: "Standard"
+    html_file: "templates/welcome.html"
+    text_file: "templates/welcome.txt"
+    subject: "Bem-vindo(a) à {{ tenant.name }}, {{ user.name }}! 🎉"
+    layout: "v3-base-layout"
+
+  v3-password-reset:
+    name: "V3 – Reset de Senha"
+    type: "Standard"
+    html_file: "templates/password_reset.html"
+    text_file: "templates/password_reset.txt"
+    subject: "🔐 Redefinição de senha – {{ tenant.name }}"
+    layout: "v3-base-layout"
+
+  v3-order-confirmation:
+    name: "V3 – Confirmação de Pedido"
+    type: "Standard"
+    html_file: "templates/order_confirmation.html"
+    text_file: "templates/order_confirmation.txt"
+    subject: "✅ Pedido {{ order.number }} confirmado – {{ tenant.name }}"
+    layout: "v3-base-layout"
+
+  v3-order-status-update:
+    name: "V3 – Status do Pedido"
+    type: "Standard"
+    html_file: "templates/order_status_update.html"
+    text_file: "templates/order_status_update.txt"
+    subject: "📋 Pedido {{ order.number }} – {{ new_status }}"
+    layout: "v3-base-layout"
+
+  v3-invoice:
+    name: "V3 – Nota Fiscal"
+    type: "Standard"
+    html_file: "templates/invoice.html"
+    text_file: "templates/invoice.txt"
+    subject: "📄 NF {{ invoice.number }} – Pedido {{ order.number }}"
+    layout: "v3-base-layout"
+
+  # ─── Membro ────────────────────────────────────────────────────────
+
+  v3-member-onboarding-invite:
+    name: "V3 – [Membro] Convite Onboarding"
+    type: "Standard"
+    html_file: "templates/member/onboarding_invite.html"
+    subject: "🎁 {{ tenant.name }} preparou algo especial para você!"
+    layout: "v3-base-layout"
+
+  v3-member-points-added:
+    name: "V3 – [Membro] Pontos Adicionados"
+    type: "Standard"
+    html_file: "templates/member/points_added.html"
+    subject: "⭐ Você recebeu +{{ points_added }} pontos – {{ tenant.name }}"
+    layout: "v3-base-layout"
+
+  v3-member-points-spent:
+    name: "V3 – [Membro] Pontos Gastos"
+    type: "Standard"
+    html_file: "templates/member/points_spent.html"
+    subject: "🎁 Resgate confirmado! – {{ product.name }}"
+    layout: "v3-base-layout"
+
+  v3-member-order-status:
+    name: "V3 – [Membro] Status da Entrega"
+    type: "Standard"
+    html_file: "templates/member/order_status.html"
+    subject: "📦 Atualização: Pedido {{ order.number }} – {{ order.status }}"
+    layout: "v3-base-layout"
+
+  v3-member-campaign-invite:
+    name: "V3 – [Membro] Convite Campanha"
+    type: "Standard"
+    html_file: "templates/member/campaign_invite.html"
+    subject: "🎉 Você foi convidado para {{ campaign.name }}!"
+    layout: "v3-base-layout"
+
+  # ─── Gestor ────────────────────────────────────────────────────────
+
+  v3-manager-user-created:
+    name: "V3 – [Gestor] Novo Usuário"
+    type: "Standard"
+    html_file: "templates/manager/user_created.html"
+    subject: "👤 Novo membro: {{ new_user.name }} – {{ tenant.name }}"
+    layout: "v3-base-layout"
+
+  v3-manager-campaign-sent:
+    name: "V3 – [Gestor] Campanha Enviada"
+    type: "Standard"
+    html_file: "templates/manager/campaign_sent.html"
+    subject: "📤 Campanha '{{ campaign.name }}' enviada para {{ total_recipients }} membros"
+    layout: "v3-base-layout"
+
+  v3-manager-campaign-started:
+    name: "V3 – [Gestor] Campanha Iniciada"
+    type: "Standard"
+    html_file: "templates/manager/campaign_started.html"
+    subject: "🚀 Campanha '{{ campaign.name }}' está ativa!"
+    layout: "v3-base-layout"
+
+  v3-manager-campaign-ended:
+    name: "V3 – [Gestor] Campanha Encerrada"
+    type: "Standard"
+    html_file: "templates/manager/campaign_ended.html"
+    subject: "🏁 Relatório: Campanha '{{ campaign.name }}' encerrada"
+    layout: "v3-base-layout"
+
+  v3-manager-gift-created:
+    name: "V3 – [Gestor] Presente Criado"
+    type: "Standard"
+    html_file: "templates/manager/gift_created.html"
+    subject: "🎁 Presente enviado para {{ gift.recipient_name }}"
+    layout: "v3-base-layout"
+
+  v3-manager-gift-status:
+    name: "V3 – [Gestor] Status do Presente"
+    type: "Standard"
+    html_file: "templates/manager/gift_status.html"
+    subject: "📋 Presente para {{ gift.recipient_name }} – {{ gift.status }}"
+    layout: "v3-base-layout"
+
+  v3-manager-crud-update:
+    name: "V3 – [Gestor] Alteração na Plataforma"
+    type: "Standard"
+    html_file: "templates/manager/crud_update.html"
+    subject: "🔔 {{ resource_type }} alterado: {{ resource_name }}"
+    layout: "v3-base-layout"
+
+  v3-manager-low-stock:
+    name: "V3 – [Gestor] Estoque Baixo"
+    type: "Standard"
+    html_file: "templates/manager/low_stock.html"
+    subject: "⚠️ Alerta: {{ total_low_stock }} produto(s) com estoque baixo"
+    layout: "v3-base-layout"

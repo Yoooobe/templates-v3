@@ -1,0 +1,59 @@
+<!-- Template: v3-member-onboarding-invite -->
+<!-- Trigger: member_onboarding_invite -->
+<!-- Audience: Membro -->
+
+<h1 style="text-align: center; font-family: 'Poppins', sans-serif;">🎁 Você foi convidado!</h1>
+
+<p style="font-family: 'Poppins', sans-serif; color: #3F3F46; text-align: center; font-size: 16px;">
+  Olá, <strong style="color: #11181C;">{{ user.name }}</strong>!
+</p>
+
+<div style="background: linear-gradient(135deg, #EEF2FF 0%, #FEF3C7 100%); border-radius: 12px; padding: 28px; margin: 24px 0; text-align: center;">
+  <p style="font-size: 18px; font-weight: 600; color: #3730A3; margin: 0 0 8px 0; font-family: 'Poppins', sans-serif;">
+    {{ tenant.name }} preparou algo especial para você!
+  </p>
+  <p style="font-size: 15px; color: #4338CA; margin: 0; font-family: 'Poppins', sans-serif;">
+    Acesse a loja e resgate seu presente de boas-vindas.
+  </p>
+</div>
+
+{{#welcome_message}}
+<p style="font-family: 'Poppins', sans-serif; color: #3F3F46; font-size: 15px; text-align: center;">
+  {{ welcome_message }}
+</p>
+{{/welcome_message}}
+
+<!-- Points Balance -->
+{{#points_balance}}
+<div style="text-align: center; margin: 28px 0;">
+  <div style="display: inline-block; background-color: #F9FAFB; border-radius: 12px; padding: 20px 40px;">
+    <p style="font-size: 36px; font-weight: 700; color: #4F46E5; line-height: 1.2; margin: 0; font-family: 'Poppins', sans-serif;">{{ points_balance }}</p>
+    <p style="font-size: 13px; color: #71717A; margin: 4px 0 0 0; font-family: 'Poppins', sans-serif;">pontos disponíveis</p>
+  </div>
+</div>
+{{/points_balance}}
+
+<div style="text-align: center; margin: 32px 0;">
+  <a href="{{ store_url }}" style="display: inline-block; padding: 16px 40px; background: linear-gradient(135deg, #F29F40 0%, #E8912E 100%); color: #FFFFFF; text-decoration: none; border-radius: 12px; font-weight: 600; font-size: 16px; font-family: 'Poppins', sans-serif; box-shadow: 0 4px 14px rgba(242, 159, 64, 0.35);">
+    🛍️ Acessar a Loja e Resgatar
+  </a>
+</div>
+
+<div style="background-color: #F9FAFB; border-left: 4px solid #4F46E5; padding: 16px 20px; margin: 24px 0; border-radius: 0 12px 12px 0;">
+  <p style="font-weight: 600; margin: 0 0 8px 0; font-size: 14px; color: #4F46E5; font-family: 'Poppins', sans-serif;">📋 Como funciona</p>
+  <table role="presentation" cellpadding="0" cellspacing="0" width="100%">
+    <tr>
+      <td style="padding: 4px 0; font-size: 14px; font-family: 'Poppins', sans-serif; color: #3F3F46;">1️⃣ Acesse a loja com seu e-mail</td>
+    </tr>
+    <tr>
+      <td style="padding: 4px 0; font-size: 14px; font-family: 'Poppins', sans-serif; color: #3F3F46;">2️⃣ Escolha o brinde que deseja</td>
+    </tr>
+    <tr>
+      <td style="padding: 4px 0; font-size: 14px; font-family: 'Poppins', sans-serif; color: #3F3F46;">3️⃣ Confirme o resgate e receba em casa!</td>
+    </tr>
+  </table>
+</div>
+
+<p style="color: #71717A; font-size: 13px; font-family: 'Poppins', sans-serif; text-align: center;">
+  Este convite foi enviado por {{ tenant.name }}. Em caso de dúvidas, entre em contato com o suporte.
+</p>

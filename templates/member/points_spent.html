@@ -1,0 +1,84 @@
+<!-- Template: v3-member-points-spent -->
+<!-- Trigger: member_points_spent -->
+<!-- Audience: Membro -->
+
+<h1 style="text-align: center; font-family: 'Poppins', sans-serif;">🎁 Resgate Realizado!</h1>
+
+<p style="font-family: 'Poppins', sans-serif; color: #3F3F46;">
+  Olá, <strong style="color: #11181C;">{{ user.name }}</strong>! Seu resgate foi confirmado com sucesso.
+</p>
+
+<!-- Transaction Summary -->
+<div style="background-color: #F0FDF4; border-left: 4px solid #22C55E; padding: 16px 20px; margin: 24px 0; border-radius: 0 12px 12px 0;">
+  <p style="font-weight: 600; margin: 0 0 8px 0; font-size: 14px; color: #166534; font-family: 'Poppins', sans-serif;">✅ Transação confirmada</p>
+  <table role="presentation" cellpadding="0" cellspacing="0" width="100%">
+    <tr>
+      <td style="padding: 4px 0; font-size: 14px; font-family: 'Poppins', sans-serif; color: #166534;"><strong>ID:</strong></td>
+      <td style="padding: 4px 0; font-size: 14px; font-family: 'Poppins', sans-serif; text-align: right; color: #166534;">{{ transaction.id }}</td>
+    </tr>
+    <tr>
+      <td style="padding: 4px 0; font-size: 14px; font-family: 'Poppins', sans-serif; color: #166534;"><strong>Data:</strong></td>
+      <td style="padding: 4px 0; font-size: 14px; font-family: 'Poppins', sans-serif; text-align: right; color: #166534;">{{ transaction.date }}</td>
+    </tr>
+  </table>
+</div>
+
+<!-- Points Used -->
+<div style="text-align: center; margin: 24px 0;">
+  <table role="presentation" cellpadding="0" cellspacing="0" width="100%">
+    <tr>
+      <td align="center" width="50%">
+        <div style="background-color: #FEF2F2; border-radius: 12px; padding: 16px;">
+          <p style="font-size: 24px; font-weight: 700; color: #EF4444; margin: 0; font-family: 'Poppins', sans-serif;">-{{ points_spent }}</p>
+          <p style="font-size: 12px; color: #71717A; margin: 4px 0 0 0; font-family: 'Poppins', sans-serif;">Pontos gastos</p>
+        </div>
+      </td>
+      <td width="12"></td>
+      <td align="center" width="50%">
+        <div style="background-color: #EEF2FF; border-radius: 12px; padding: 16px;">
+          <p style="font-size: 24px; font-weight: 700; color: #4F46E5; margin: 0; font-family: 'Poppins', sans-serif;">{{ points_balance }}</p>
+          <p style="font-size: 12px; color: #71717A; margin: 4px 0 0 0; font-family: 'Poppins', sans-serif;">Saldo restante</p>
+        </div>
+      </td>
+    </tr>
+  </table>
+</div>
+
+<!-- Product Redeemed -->
+<h2 style="font-family: 'Poppins', sans-serif; color: #11181C; font-size: 18px;">🎁 Brinde Resgatado</h2>
+
+<div style="background-color: #F9FAFB; border-radius: 12px; padding: 16px; margin: 16px 0;">
+  <table role="presentation" cellpadding="0" cellspacing="0" width="100%">
+    {{#product.image_url}}
+    <tr>
+      <td align="center" style="padding-bottom: 12px;">
+        <img src="{{{ product.image_url }}}" alt="{{ product.name }}" style="max-width: 200px; max-height: 160px; border-radius: 8px; object-fit: cover;">
+      </td>
+    </tr>
+    {{/product.image_url}}
+    <tr>
+      <td align="center">
+        <p style="font-weight: 600; font-size: 16px; color: #11181C; margin: 0 0 4px 0; font-family: 'Poppins', sans-serif;">{{ product.name }}</p>
+        {{#product.variant}}
+        <p style="font-size: 13px; color: #71717A; margin: 0; font-family: 'Poppins', sans-serif;">Variação: {{ product.variant }}</p>
+        {{/product.variant}}
+        <p style="font-size: 14px; color: #4F46E5; font-weight: 600; margin: 8px 0 0 0; font-family: 'Poppins', sans-serif;">{{ product.points_cost }} pontos</p>
+      </td>
+    </tr>
+  </table>
+</div>
+
+<!-- Shipping Info -->
+{{#shipping_address}}
+<div style="background-color: #F9FAFB; border-left: 4px solid #4F46E5; padding: 16px 20px; margin: 20px 0; border-radius: 0 12px 12px 0;">
+  <p style="font-weight: 600; margin: 0 0 4px 0; font-size: 14px; color: #4F46E5; font-family: 'Poppins', sans-serif;">📍 Endereço de entrega</p>
+  <p style="margin: 0; font-size: 14px; color: #3F3F46; font-family: 'Poppins', sans-serif;">{{ shipping_address }}</p>
+</div>
+{{/shipping_address}}
+
+<!-- CTA -->
+<div style="text-align: center; margin: 32px 0;">
+  <a href="{{ order_url }}" style="display: inline-block; padding: 14px 36px; background: linear-gradient(135deg, #4F46E5 0%, #6366F1 100%); color: #FFFFFF; text-decoration: none; border-radius: 12px; font-weight: 600; font-size: 15px; font-family: 'Poppins', sans-serif; box-shadow: 0 4px 14px rgba(79, 70, 229, 0.35);">
+    📦 Acompanhar Pedido
+  </a>
+</div>

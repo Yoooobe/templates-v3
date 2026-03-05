@@ -1,0 +1,155 @@
+{
+  "tenant": {
+    "name": "TechCorp Brasil",
+    "logo_url": "https://via.placeholder.com/180x40/4F46E5/FFFFFF?text=TechCorp",
+    "support_email": "suporte@techcorp.com.br",
+    "website_url": "https://techcorp.com.br",
+    "primary_color": "#4F46E5",
+    "phone": "(11) 3456-7890"
+  },
+  "user": {
+    "name": "Maria Silva",
+    "email": "maria.silva@email.com"
+  },
+  "manager": {
+    "name": "Carlos Gerente",
+    "email": "carlos@techcorp.com.br"
+  },
+  "new_user": {
+    "name": "João Oliveira",
+    "email": "joao.oliveira@email.com",
+    "department": "Marketing"
+  },
+  "login_url": "https://techcorp.yoobe.me/login",
+  "store_url": "https://techcorp.yoobe.me/loja",
+  "admin_url": "https://techcorp.yoobe.me/admin",
+  "reset_url": "https://techcorp.yoobe.me/auth/reset?token=abc123def456",
+  "expiration_hours": "24",
+  "platform_url": "https://4unik.yoobe.me",
+  "current_year": "2026",
+  "custom_message": "Aproveite seus benefícios! Estamos sempre inovando para trazer as melhores opções para você.",
+
+  "order": {
+    "number": "PED-2026-0042",
+    "date": "04/03/2026",
+    "status": "Em Produção",
+    "total": "R$ 1.250,00",
+    "subtotal": "R$ 1.150,00",
+    "shipping": "R$ 100,00",
+    "payment_method": "Pontos",
+    "shipping_address": "Rua das Flores, 123, Apto 45 – Jardim Paulista, São Paulo/SP – CEP 01452-000",
+    "tracking_url": "https://rastreamento.correios.com.br/app?id=BR123456789"
+  },
+
+  "products": [
+    {
+      "name": "Camiseta Polo Personalizada",
+      "quantity": 5,
+      "unit_price": "R$ 150,00",
+      "total_price": "R$ 750,00",
+      "sku": "POLO-M-AZL",
+      "image_url": "https://via.placeholder.com/80x80/F29F40/FFFFFF?text=Polo"
+    },
+    {
+      "name": "Caneca Térmica 500ml",
+      "quantity": 10,
+      "unit_price": "R$ 40,00",
+      "total_price": "R$ 400,00",
+      "sku": "CANECA-500",
+      "image_url": "https://via.placeholder.com/80x80/4F46E5/FFFFFF?text=Caneca"
+    }
+  ],
+
+  "product": {
+    "name": "Mochila Executiva Premium",
+    "points_cost": "2.500",
+    "variant": "Preta",
+    "image_url": "https://via.placeholder.com/200x160/11181C/FFFFFF?text=Mochila"
+  },
+
+  "invoice": {
+    "number": "NF-2026-00789",
+    "date": "04/03/2026",
+    "due_date": "04/04/2026",
+    "pdf_url": "https://techcorp.yoobe.me/invoices/NF-2026-00789.pdf",
+    "notes": "Pagamento via compensação de pontos. Nota fiscal emitida para fins de controle interno."
+  },
+
+  "action_url": "https://techcorp.yoobe.me/orders/PED-2026-0042",
+  "new_status": "Em Produção",
+  "status_message": "Seu pedido está sendo preparado pela nossa equipe. A previsão de envio é de 3 a 5 dias úteis.",
+
+  "points_added": "500",
+  "points_spent": "2.500",
+  "points_balance": "3.750",
+  "points_expiring": "200",
+  "reason": "Campanha de Dia das Mulheres 2026",
+  "campaign_name": "Dia das Mulheres 2026",
+  "welcome_message": "A TechCorp preparou uma seleção exclusiva de brindes para você. Acesse a loja e escolha o que mais combina com você!",
+
+  "transaction": {
+    "id": "TXN-2026-00156",
+    "date": "04/03/2026 às 14:32"
+  },
+  "shipping_address": "Rua das Flores, 123, Apto 45 – São Paulo/SP",
+  "order_url": "https://techcorp.yoobe.me/orders/PED-2026-0042",
+
+  "status_history": [
+    { "status_name": "Pedido Recebido", "status_date": "04/03/2026", "is_completed": true, "is_current": false },
+    { "status_name": "Em Produção", "status_date": "04/03/2026", "is_completed": false, "is_current": true },
+    { "status_name": "Enviado", "is_completed": false, "is_current": false },
+    { "status_name": "Entregue", "is_completed": false, "is_current": false }
+  ],
+  "tracking_url": "https://rastreamento.correios.com.br/app?id=BR123456789",
+
+  "campaign": {
+    "name": "Dia das Mulheres 2026",
+    "description": "Celebre com a gente! Escolha um brinde especial para este dia.",
+    "start_date": "01/03/2026",
+    "end_date": "31/03/2026"
+  },
+  "points_available": "1.000",
+  "invite_message": "Você foi selecionada para participar da nossa campanha especial de Dia das Mulheres! Acesse a loja e escolha o brinde que mais combina com você.",
+
+  "created_at": "04/03/2026 às 10:15",
+  "total_members": "247",
+  "total_recipients": "150",
+  "points_per_member": "500",
+  "total_points": "75.000",
+  "sent_at": "04/03/2026 às 09:00",
+  "campaign_url": "https://techcorp.yoobe.me/admin/campaigns/dia-mulheres-2026",
+
+  "total_participants": "150",
+  "total_products": "12",
+  "total_redemptions": "98",
+  "points_used": "45.000",
+  "points_remaining": "30.000",
+  "engagement_rate": "65",
+  "top_product": "Mochila Executiva Premium",
+  "report_url": "https://techcorp.yoobe.me/admin/campaigns/dia-mulheres-2026/report",
+
+  "gift": {
+    "product_name": "Kit Escritório Premium",
+    "recipient_name": "Ana Costa",
+    "recipient_email": "ana.costa@email.com",
+    "date": "04/03/2026",
+    "message": "Parabéns pelo excelente desempenho neste trimestre!",
+    "status": "Enviado",
+    "order_number": "PED-2026-0099"
+  },
+
+  "resource_type": "Campanha",
+  "resource_name": "Dia das Mulheres 2026",
+  "performed_by": "Carlos Gerente",
+  "performed_at": "04/03/2026 às 16:45",
+  "is_create": false,
+  "is_update": true,
+  "is_delete": false,
+  "changes": [
+    { "field": "Data de término", "old_value": "15/03/2026", "new_value": "31/03/2026" },
+    { "field": "Pontos por membro", "old_value": "300", "new_value": "500" }
+  ],
+
+  "total_low_stock": "3",
+  "inventory_url": "https://techcorp.yoobe.me/admin/inventory"
+}

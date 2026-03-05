@@ -1,0 +1,20 @@
+{{ tenant.name }}
+─────────────────────────────────
+
+{{{ @content }}}
+
+{{#custom_message}}
+──────────────────
+📝 Mensagem do fornecedor:
+{{ custom_message }}
+──────────────────
+{{/custom_message}}
+
+─────────────────────────────────
+{{ tenant.name }}
+{{#tenant.support_email}}📧 {{ tenant.support_email }}{{/tenant.support_email}}
+{{#tenant.phone}}📞 {{ tenant.phone }}{{/tenant.phone}}
+{{#tenant.website_url}}🌐 {{ tenant.website_url }}{{/tenant.website_url}}
+
+Este e-mail foi enviado pela plataforma 4Unik ({{ platform_url }}).
+© {{ current_year }} {{ tenant.name }}. Todos os direitos reservados.

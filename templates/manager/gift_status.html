@@ -1,0 +1,43 @@
+<!-- Template: v3-manager-gift-status -->
+<!-- Trigger: manager_gift_status_changed -->
+<!-- Audience: Gestor -->
+
+<h1 style="text-align: center; font-family: 'Poppins', sans-serif;">📋 Status do Presente Atualizado</h1>
+
+<p style="font-family: 'Poppins', sans-serif; color: #3F3F46;">
+  Olá, <strong style="color: #11181C;">{{ manager.name }}</strong>! O status de um presente solicitado foi atualizado.
+</p>
+
+<!-- Status Badge -->
+<div style="text-align: center; margin: 28px 0;">
+  <span style="display: inline-block; padding: 10px 28px; border-radius: 9999px; font-weight: 600; font-size: 16px; font-family: 'Poppins', sans-serif; background: linear-gradient(135deg, #4F46E5, #6366F1); color: #FFFFFF;">
+    {{ gift.status }}
+  </span>
+</div>
+
+<div style="background-color: #F9FAFB; border-left: 4px solid #4F46E5; padding: 16px 20px; margin: 24px 0; border-radius: 0 12px 12px 0;">
+  <table role="presentation" cellpadding="0" cellspacing="0" width="100%">
+    <tr><td style="padding: 4px 0; font-size: 14px; font-family: 'Poppins', sans-serif; color: #71717A;">🎁 Produto:</td><td style="padding: 4px 0; font-size: 14px; font-family: 'Poppins', sans-serif; text-align: right; color: #11181C; font-weight: 600;">{{ gift.product_name }}</td></tr>
+    <tr><td style="padding: 4px 0; font-size: 14px; font-family: 'Poppins', sans-serif; color: #71717A;">👤 Destinatário:</td><td style="padding: 4px 0; font-size: 14px; font-family: 'Poppins', sans-serif; text-align: right; color: #11181C;">{{ gift.recipient_name }}</td></tr>
+    <tr><td style="padding: 4px 0; font-size: 14px; font-family: 'Poppins', sans-serif; color: #71717A;">📋 Pedido:</td><td style="padding: 4px 0; font-size: 14px; font-family: 'Poppins', sans-serif; text-align: right; color: #11181C;">{{ gift.order_number }}</td></tr>
+    <tr><td style="padding: 4px 0; font-size: 14px; font-family: 'Poppins', sans-serif; color: #71717A;">📅 Solicitado em:</td><td style="padding: 4px 0; font-size: 14px; font-family: 'Poppins', sans-serif; text-align: right; color: #11181C;">{{ gift.date }}</td></tr>
+  </table>
+</div>
+
+{{#status_message}}
+<div style="background: linear-gradient(135deg, #EEF2FF 0%, #FEF3C7 100%); border-radius: 12px; padding: 20px 24px; margin: 24px 0;">
+  <p style="margin: 0; font-size: 15px; color: #3730A3; font-family: 'Poppins', sans-serif;">💬 {{ status_message }}</p>
+</div>
+{{/status_message}}
+
+{{#tracking_url}}
+<p style="font-family: 'Poppins', sans-serif; font-size: 14px; color: #3F3F46;">
+  🚚 Rastreamento: <a href="{{ tracking_url }}" style="color: #4F46E5; font-weight: 500; text-decoration: none;">{{ tracking_url }}</a>
+</p>
+{{/tracking_url}}
+
+<div style="text-align: center; margin: 32px 0;">
+  <a href="{{ admin_url }}" style="display: inline-block; padding: 14px 36px; background: linear-gradient(135deg, #4F46E5 0%, #6366F1 100%); color: #FFFFFF; text-decoration: none; border-radius: 12px; font-weight: 600; font-size: 15px; font-family: 'Poppins', sans-serif; box-shadow: 0 4px 14px rgba(79, 70, 229, 0.35);">
+    📦 Ver Detalhes
+  </a>
+</div>

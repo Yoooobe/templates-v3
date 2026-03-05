@@ -1,0 +1,29 @@
+✅ Pedido Confirmado!
+
+Olá, {{ user.name }},
+
+Seu pedido foi recebido com sucesso!
+
+📋 Pedido: {{ order.number }}
+📅 Data: {{ order.date }}
+💳 Pagamento: {{ order.payment_method }}
+
+📦 Itens do Pedido:
+{{#each products}}
+  • {{ name }} (SKU: {{ sku }})
+    Qtd: {{ quantity }} | Valor Un.: {{ unit_price }} | Total: {{ total_price }}
+{{/each}}
+
+──────────────────
+Subtotal: {{ order.subtotal }}
+{{#order.shipping}}Frete: {{ order.shipping }}{{/order.shipping}}
+{{#order.discount}}Desconto: -{{ order.discount }}{{/order.discount}}
+TOTAL: {{ order.total }}
+──────────────────
+
+📍 Endereço de Entrega:
+{{ order.shipping_address }}
+
+👉 Acompanhar Pedido: {{ action_url }}
+
+Dúvidas sobre seu pedido? Entre em contato com nosso suporte.

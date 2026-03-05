@@ -1,0 +1,26 @@
+📄 Nota Fiscal
+
+Olá, {{ user.name }},
+
+A nota fiscal referente ao seu pedido {{ order.number }} foi emitida.
+
+📄 Nota Fiscal: {{ invoice.number }}
+📅 Data de Emissão: {{ invoice.date }}
+📅 Vencimento: {{ invoice.due_date }}
+📋 Pedido: {{ order.number }}
+💰 Valor Total: {{ order.total }}
+
+📦 Itens:
+{{#each products}}
+  • {{ name }} (SKU: {{ sku }})
+    Qtd: {{ quantity }} | Valor Un.: {{ unit_price }} | Total: {{ total_price }}
+{{/each}}
+
+📥 Baixar Nota Fiscal (PDF): {{ invoice.pdf_url }}
+
+{{#invoice.notes}}
+📝 Observações:
+{{ invoice.notes }}
+{{/invoice.notes}}
+
+Guarde este e-mail para seus registros. Em caso de dúvidas, entre em contato com nosso suporte.

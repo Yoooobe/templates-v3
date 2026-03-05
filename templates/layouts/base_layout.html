@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>{{ tenant.name }} – Yoobe</title>
+  <!--[if mso]>
+  <noscript>
+    <xml>
+      <o:OfficeDocumentSettings>
+        <o:PixelsPerInch>96</o:PixelsPerInch>
+      </o:OfficeDocumentSettings>
+    </xml>
+  </noscript>
+  <![endif]-->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    /* ─── Reset ─────────────────────────────────────────────── */
+    body, table, td, a { -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
+    table, td { mso-table-lspace: 0pt; mso-table-rspace: 0pt; }
+    img { -ms-interpolation-mode: bicubic; border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; }
+    body { margin: 0; padding: 0; width: 100% !important; height: 100% !important; }
+    a[x-apple-data-detectors] { color: inherit !important; text-decoration: none !important; }
+
+    /* ─── Design System: Yoobe ─────────────────────────────── */
+    body {
+      background-color: #F9FAFB;
+      font-family: 'Poppins', ui-sans-serif, system-ui, -apple-system, sans-serif;
+      font-size: 15px;
+      line-height: 1.7;
+      color: #11181C;
+    }
+
+    .email-wrapper {
+      max-width: 600px;
+      margin: 0 auto;
+      background-color: #FFFFFF;
+    }
+
+    /* ─── Header with Gradient ─────────────────────────────── */
+    .email-header {
+      background: linear-gradient(135deg, #4F46E5 0%, #6366F1 40%, #F29F40 100%);
+      padding: 32px 40px;
+      text-align: center;
+    }
+
+    .email-header img.logo {
+      max-height: 36px;
+      max-width: 140px;
+    }
+
+    .email-header .tenant-name {
+      color: #FFFFFF;
+      font-size: 14px;
+      font-weight: 500;
+      margin-top: 12px;
+      opacity: 0.9;
+    }
+
+    /* ─── Content ──────────────────────────────────────────── */
+    .email-body {
+      padding: 40px;
+    }
+
+    /* ─── Footer ───────────────────────────────────────────── */
+    .email-footer {
+      background-color: #F9FAFB;
+      padding: 28px 40px;
+      text-align: center;
+      border-top: 1px solid #F1F5F9;
+    }
+
+    .email-footer p {
+      margin: 4px 0;
+      font-size: 13px;
+      color: #71717A;
+    }
+
+    .email-footer a {
+      color: #4F46E5;
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .email-footer a:hover {
+      text-decoration: underline;
+    }
+
+    /* ─── Buttons ──────────────────────────────────────────── */
+    .btn-primary {
+      display: inline-block;
+      padding: 14px 36px;
+      background: linear-gradient(135deg, #F29F40 0%, #E8912E 100%);
+      color: #FFFFFF !important;
+      text-decoration: none;
+      border-radius: 12px;
+      font-weight: 600;
+      font-size: 15px;
+      font-family: 'Poppins', sans-serif;
+      text-align: center;
+      box-shadow: 0 4px 14px rgba(242, 159, 64, 0.35);
+      transition: transform 0.2s;
+    }
+
+    .btn-secondary {
+      display: inline-block;
+      padding: 12px 28px;
+      background-color: #FFFFFF;
+      color: #4F46E5 !important;
+      text-decoration: none;
+      border-radius: 12px;
+      font-weight: 600;
+      font-size: 14px;
+      font-family: 'Poppins', sans-serif;
+      text-align: center;
+      border: 2px solid #4F46E5;
+    }
+
+    .btn-indigo {
+      display: inline-block;
+      padding: 14px 36px;
+      background: linear-gradient(135deg, #4F46E5 0%, #6366F1 100%);
+      color: #FFFFFF !important;
+      text-decoration: none;
+      border-radius: 12px;
+      font-weight: 600;
+      font-size: 15px;
+      font-family: 'Poppins', sans-serif;
+      text-align: center;
+      box-shadow: 0 4px 14px rgba(79, 70, 229, 0.35);
+    }
+
+    /* ─── Typography ──────────────────────────────────────── */
+    h1 {
+      font-family: 'Poppins', sans-serif;
+      font-size: 24px;
+      font-weight: 700;
+      color: #11181C;
+      margin: 0 0 16px 0;
+      line-height: 1.3;
+    }
+
+    h2 {
+      font-family: 'Poppins', sans-serif;
+      font-size: 18px;
+      font-weight: 600;
+      color: #11181C;
+      margin: 28px 0 12px 0;
+      line-height: 1.4;
+    }
+
+    p {
+      margin: 12px 0;
+      color: #3F3F46;
+      line-height: 1.7;
+    }
+
+    /* ─── Cards & Boxes ───────────────────────────────────── */
+    .info-box {
+      background-color: #F9FAFB;
+      border-left: 4px solid #4F46E5;
+      padding: 16px 20px;
+      margin: 20px 0;
+      border-radius: 0 12px 12px 0;
+    }
+
+    .info-box p {
+      margin: 4px 0;
+      font-size: 14px;
+    }
+
+    .highlight-box {
+      background: linear-gradient(135deg, #EEF2FF 0%, #FEF3C7 100%);
+      border-radius: 12px;
+      padding: 20px 24px;
+      margin: 20px 0;
+    }
+
+    .success-box {
+      background-color: #F0FDF4;
+      border-left: 4px solid #22C55E;
+      padding: 16px 20px;
+      margin: 20px 0;
+      border-radius: 0 12px 12px 0;
+    }
+
+    .warning-box {
+      background-color: #FFFBEB;
+      border-left: 4px solid #F59E0B;
+      padding: 16px 20px;
+      margin: 20px 0;
+      border-radius: 0 12px 12px 0;
+    }
+
+    .alert-box {
+      background-color: #FEF2F2;
+      border-left: 4px solid #EF4444;
+      padding: 16px 20px;
+      margin: 20px 0;
+      border-radius: 0 12px 12px 0;
+    }
+
+    /* ─── Status Badge ────────────────────────────────────── */
+    .status-badge {
+      display: inline-block;
+      padding: 8px 24px;
+      border-radius: 9999px;
+      font-weight: 600;
+      font-size: 14px;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    .status-badge--primary {
+      background: linear-gradient(135deg, #F29F40, #E8912E);
+      color: #FFFFFF;
+    }
+
+    .status-badge--indigo {
+      background: linear-gradient(135deg, #4F46E5, #6366F1);
+      color: #FFFFFF;
+    }
+
+    .status-badge--success {
+      background-color: #DCFCE7;
+      color: #166534;
+    }
+
+    /* ─── Tables ──────────────────────────────────────────── */
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 16px 0;
+    }
+
+    .data-table th {
+      background-color: #F9FAFB;
+      padding: 12px 16px;
+      text-align: left;
+      font-size: 12px;
+      font-weight: 600;
+      color: #71717A;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      border-bottom: 2px solid #F1F5F9;
+    }
+
+    .data-table td {
+      padding: 12px 16px;
+      border-bottom: 1px solid #F1F5F9;
+      font-size: 14px;
+      color: #3F3F46;
+    }
+
+    /* ─── Metric Card ─────────────────────────────────────── */
+    .metric-card {
+      text-align: center;
+      padding: 20px;
+      border-radius: 12px;
+      background-color: #F9FAFB;
+    }
+
+    .metric-value {
+      font-size: 32px;
+      font-weight: 700;
+      color: #4F46E5;
+      line-height: 1.2;
+    }
+
+    .metric-label {
+      font-size: 13px;
+      color: #71717A;
+      margin-top: 4px;
+    }
+
+    /* ─── Divider ─────────────────────────────────────────── */
+    .divider {
+      border: none;
+      border-top: 1px solid #F1F5F9;
+      margin: 24px 0;
+    }
+
+    /* ─── Responsive ──────────────────────────────────────── */
+    @media screen and (max-width: 600px) {
+      .email-wrapper { width: 100% !important; }
+      .email-header { padding: 24px 20px !important; }
+      .email-body { padding: 24px 20px !important; }
+      .email-footer { padding: 20px !important; }
+      h1 { font-size: 20px !important; }
+      .btn-primary, .btn-indigo { padding: 12px 24px !important; font-size: 14px !important; }
+    }
+  </style>
+</head>
+<body>
+  <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="background-color: #F9FAFB;">
+    <tr>
+      <td align="center" style="padding: 24px 16px;">
+
+        <!-- Email Container -->
+        <table role="presentation" cellpadding="0" cellspacing="0" width="600" class="email-wrapper" style="background-color: #FFFFFF; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 24px rgba(0,0,0,0.06);">
+
+          <!-- ─── Header with Gradient ─── -->
+          <tr>
+            <td class="email-header" style="background: linear-gradient(135deg, #4F46E5 0%, #6366F1 40%, #F29F40 100%); padding: 32px 40px; text-align: center;">
+              <table role="presentation" cellpadding="0" cellspacing="0" width="100%">
+                <tr>
+                  <td align="center">
+                    {{#tenant.logo_url}}
+                    <a href="{{ tenant.website_url }}" target="_blank" style="text-decoration: none;">
+                      <img src="{{{ tenant.logo_url }}}" alt="{{ tenant.name }}" class="logo" style="max-height: 40px; max-width: 180px;">
+                    </a>
+                    {{/tenant.logo_url}}
+                    {{^tenant.logo_url}}
+                    <img src="https://catalogo.yoobe.co/yoobe-logo-header.svg" alt="Yoobe" class="logo" style="max-height: 36px;">
+                    {{/tenant.logo_url}}
+                  </td>
+                </tr>
+                {{#tenant.name}}
+                <tr>
+                  <td align="center" style="padding-top: 12px;">
+                    <span style="color: #FFFFFF; font-family: 'Poppins', sans-serif; font-size: 14px; font-weight: 500; opacity: 0.9;">{{ tenant.name }}</span>
+                  </td>
+                </tr>
+                {{/tenant.name}}
+              </table>
+            </td>
+          </tr>
+
+          <!-- ─── Body Content ─── -->
+          <tr>
+            <td class="email-body" style="padding: 40px; font-family: 'Poppins', sans-serif;">
+              {{{ @content }}}
+            </td>
+          </tr>
+
+          <!-- ─── Custom Message (if provided by tenant) ─── -->
+          {{#custom_message}}
+          <tr>
+            <td style="padding: 0 40px 24px 40px;">
+              <div style="background: linear-gradient(135deg, #EEF2FF 0%, #FEF3C7 100%); border-radius: 12px; padding: 20px 24px;">
+                <p style="font-weight: 600; margin: 0 0 8px 0; font-size: 14px; color: #4F46E5; font-family: 'Poppins', sans-serif;">💬 Mensagem:</p>
+                <p style="margin: 0; font-size: 14px; color: #3F3F46; font-family: 'Poppins', sans-serif;">{{ custom_message }}</p>
+              </div>
+            </td>
+          </tr>
+          {{/custom_message}}
+
+          <!-- ─── Footer ─── -->
+          <tr>
+            <td class="email-footer" style="background-color: #F9FAFB; padding: 28px 40px; text-align: center; border-top: 1px solid #F1F5F9;">
+              <table role="presentation" cellpadding="0" cellspacing="0" width="100%">
+                <tr>
+                  <td align="center">
+                    <p style="font-family: 'Poppins', sans-serif; font-weight: 600; font-size: 14px; color: #11181C; margin: 0 0 8px 0;">{{ tenant.name }}</p>
+                    {{#tenant.support_email}}
+                    <p style="font-family: 'Poppins', sans-serif; font-size: 13px; color: #71717A; margin: 4px 0;">
+                      📧 <a href="mailto:{{ tenant.support_email }}" style="color: #4F46E5; text-decoration: none;">{{ tenant.support_email }}</a>
+                    </p>
+                    {{/tenant.support_email}}
+                    {{#tenant.phone}}
+                    <p style="font-family: 'Poppins', sans-serif; font-size: 13px; color: #71717A; margin: 4px 0;">📞 {{ tenant.phone }}</p>
+                    {{/tenant.phone}}
+                    {{#tenant.website_url}}
+                    <p style="font-family: 'Poppins', sans-serif; font-size: 13px; color: #71717A; margin: 4px 0;">
+                      🌐 <a href="{{ tenant.website_url }}" target="_blank" style="color: #4F46E5; text-decoration: none;">{{ tenant.website_url }}</a>
+                    </p>
+                    {{/tenant.website_url}}
+                    <hr style="border: none; border-top: 1px solid #E5E7EB; margin: 16px 0;">
+                    <p style="font-family: 'Poppins', sans-serif; font-size: 11px; color: #A1A1AA; margin: 0;">
+                      Enviado via <a href="{{ platform_url }}" target="_blank" style="color: #4F46E5; text-decoration: none; font-weight: 500;">Yoobe</a> · © {{ current_year }} {{ tenant.name }}
+                    </p>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+        </table>
+
+      </td>
+    </tr>
+  </table>
+</body>
+</html>

@@ -1,0 +1,64 @@
+<!-- Template: v3-manager-crud-update -->
+<!-- Trigger: manager_crud_update -->
+<!-- Audience: Gestor -->
+
+<h1 style="text-align: center; font-family: 'Poppins', sans-serif;">🔔 Notificação de Alteração</h1>
+
+<p style="font-family: 'Poppins', sans-serif; color: #3F3F46;">
+  Olá, <strong style="color: #11181C;">{{ manager.name }}</strong>! Uma alteração foi realizada na plataforma.
+</p>
+
+<!-- Action Badge -->
+<div style="text-align: center; margin: 28px 0;">
+  <span style="display: inline-block; padding: 8px 24px; border-radius: 9999px; font-weight: 600; font-size: 14px; font-family: 'Poppins', sans-serif;
+    {{#is_create}}background-color: #DCFCE7; color: #166534;{{/is_create}}
+    {{#is_update}}background-color: #EEF2FF; color: #3730A3;{{/is_update}}
+    {{#is_delete}}background-color: #FEF2F2; color: #991B1B;{{/is_delete}}
+  ">
+    {{#is_create}}✨ Criação{{/is_create}}
+    {{#is_update}}✏️ Atualização{{/is_update}}
+    {{#is_delete}}🗑️ Exclusão{{/is_delete}}
+  </span>
+  <span style="display: inline-block; padding: 8px 24px; border-radius: 9999px; font-weight: 600; font-size: 14px; font-family: 'Poppins', sans-serif; background-color: #F9FAFB; color: #71717A; margin-left: 8px;">
+    {{ resource_type }}
+  </span>
+</div>
+
+<!-- Details -->
+<div style="background-color: #F9FAFB; border-left: 4px solid #4F46E5; padding: 16px 20px; margin: 24px 0; border-radius: 0 12px 12px 0;">
+  <table role="presentation" cellpadding="0" cellspacing="0" width="100%">
+    <tr><td style="padding: 4px 0; font-size: 14px; font-family: 'Poppins', sans-serif; color: #71717A;">📋 Recurso:</td><td style="padding: 4px 0; font-size: 14px; font-family: 'Poppins', sans-serif; text-align: right; color: #11181C; font-weight: 600;">{{ resource_name }}</td></tr>
+    <tr><td style="padding: 4px 0; font-size: 14px; font-family: 'Poppins', sans-serif; color: #71717A;">🏷️ Tipo:</td><td style="padding: 4px 0; font-size: 14px; font-family: 'Poppins', sans-serif; text-align: right; color: #11181C;">{{ resource_type }}</td></tr>
+    <tr><td style="padding: 4px 0; font-size: 14px; font-family: 'Poppins', sans-serif; color: #71717A;">👤 Realizado por:</td><td style="padding: 4px 0; font-size: 14px; font-family: 'Poppins', sans-serif; text-align: right; color: #11181C;">{{ performed_by }}</td></tr>
+    <tr><td style="padding: 4px 0; font-size: 14px; font-family: 'Poppins', sans-serif; color: #71717A;">📅 Data/Hora:</td><td style="padding: 4px 0; font-size: 14px; font-family: 'Poppins', sans-serif; text-align: right; color: #11181C;">{{ performed_at }}</td></tr>
+  </table>
+</div>
+
+<!-- Changes -->
+{{#changes}}
+<h2 style="font-family: 'Poppins', sans-serif; color: #11181C; font-size: 16px;">📝 Detalhes da Alteração</h2>
+<table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="border-collapse: collapse; margin: 16px 0;">
+  <thead>
+    <tr>
+      <th style="background-color: #F9FAFB; padding: 10px 16px; text-align: left; font-size: 12px; font-weight: 600; color: #71717A; text-transform: uppercase; border-bottom: 2px solid #F1F5F9; font-family: 'Poppins', sans-serif;">Campo</th>
+      <th style="background-color: #F9FAFB; padding: 10px 16px; text-align: right; font-size: 12px; font-weight: 600; color: #71717A; text-transform: uppercase; border-bottom: 2px solid #F1F5F9; font-family: 'Poppins', sans-serif;">Anterior</th>
+      <th style="background-color: #F9FAFB; padding: 10px 16px; text-align: right; font-size: 12px; font-weight: 600; color: #71717A; text-transform: uppercase; border-bottom: 2px solid #F1F5F9; font-family: 'Poppins', sans-serif;">Novo</th>
+    </tr>
+  </thead>
+  <tbody>
+    {{#each changes}}
+    <tr>
+      <td style="padding: 10px 16px; border-bottom: 1px solid #F1F5F9; font-size: 13px; font-family: 'Poppins', sans-serif; color: #3F3F46;">{{ field }}</td>
+      <td style="padding: 10px 16px; border-bottom: 1px solid #F1F5F9; font-size: 13px; font-family: 'Poppins', sans-serif; text-align: right; color: #EF4444; text-decoration: line-through;">{{ old_value }}</td>
+      <td style="padding: 10px 16px; border-bottom: 1px solid #F1F5F9; font-size: 13px; font-family: 'Poppins', sans-serif; text-align: right; color: #22C55E; font-weight: 500;">{{ new_value }}</td>
+    </tr>
+    {{/each}}
+  </tbody>
+</table>
+{{/changes}}
+
+<div style="text-align: center; margin: 32px 0;">
+  <a href="{{ admin_url }}" style="display: inline-block; padding: 14px 36px; background: linear-gradient(135deg, #4F46E5 0%, #6366F1 100%); color: #FFFFFF; text-decoration: none; border-radius: 12px; font-weight: 600; font-size: 15px; font-family: 'Poppins', sans-serif; box-shadow: 0 4px 14px rgba(79, 70, 229, 0.35);">
+    Abrir Painel Admin
+  </a>
+</div>

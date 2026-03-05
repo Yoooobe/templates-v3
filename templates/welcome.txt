@@ -1,0 +1,17 @@
+🎉 Bem-vindo(a)!
+
+Olá, {{ user.name }}!
+
+Sua conta na {{ tenant.name }} foi criada com sucesso. Agora você tem acesso à nossa plataforma de brindes e produtos personalizados.
+
+👉 Acesse sua conta: {{ login_url }}
+
+📋 Dados da sua conta:
+E-mail: {{ user.email }}
+
+O que você pode fazer:
+📦 Explorar o Catálogo – Navegue por centenas de produtos personalizáveis
+🎨 Personalizar Produtos – Adicione sua marca e crie produtos exclusivos
+📋 Solicitar Orçamentos – Receba propostas detalhadas para seus projetos
+
+Se você não solicitou a criação desta conta, por favor ignore este e-mail ou entre em contato com nosso suporte.

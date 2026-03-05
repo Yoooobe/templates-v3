@@ -1,0 +1,69 @@
+<!-- Template: v3-invoice -->
+<!-- Trigger: invoice_generated -->
+
+<h1 style="text-align: center; font-family: 'Poppins', sans-serif;">📄 Nota Fiscal Emitida</h1>
+
+<p style="font-family: 'Poppins', sans-serif; color: #3F3F46;">
+  Olá, <strong style="color: #11181C;">{{ user.name }}</strong>! A nota fiscal do seu pedido <strong style="color: #4F46E5;">{{ order.number }}</strong> foi emitida.
+</p>
+
+<!-- Invoice Info -->
+<div style="background-color: #F0FDF4; border: 1px solid #BBF7D0; border-radius: 12px; padding: 20px; margin: 24px 0;">
+  <table role="presentation" cellpadding="0" cellspacing="0" width="100%">
+    <tr>
+      <td style="padding: 6px 0; font-size: 14px; font-family: 'Poppins', sans-serif; color: #166534;"><strong>📄 NF:</strong></td>
+      <td style="padding: 6px 0; font-size: 14px; font-family: 'Poppins', sans-serif; text-align: right; font-weight: 600; color: #166534;">{{ invoice.number }}</td>
+    </tr>
+    <tr>
+      <td style="padding: 6px 0; font-size: 14px; font-family: 'Poppins', sans-serif; color: #166534;"><strong>📅 Emissão:</strong></td>
+      <td style="padding: 6px 0; font-size: 14px; font-family: 'Poppins', sans-serif; text-align: right; color: #166534;">{{ invoice.date }}</td>
+    </tr>
+    <tr>
+      <td style="padding: 6px 0; font-size: 14px; font-family: 'Poppins', sans-serif; color: #166534;"><strong>📅 Vencimento:</strong></td>
+      <td style="padding: 6px 0; font-size: 14px; font-family: 'Poppins', sans-serif; text-align: right; color: #166534;">{{ invoice.due_date }}</td>
+    </tr>
+    <tr>
+      <td colspan="2"><hr style="border: none; border-top: 1px solid #BBF7D0; margin: 8px 0;"></td>
+    </tr>
+    <tr>
+      <td style="padding: 6px 0; font-size: 20px; font-weight: 700; font-family: 'Poppins', sans-serif; color: #166534;">💰 Total:</td>
+      <td style="padding: 6px 0; font-size: 20px; font-weight: 700; text-align: right; font-family: 'Poppins', sans-serif; color: #4F46E5;">{{ order.total }}</td>
+    </tr>
+  </table>
+</div>
+
+<!-- Products -->
+<h2 style="font-family: 'Poppins', sans-serif; color: #11181C; font-size: 18px;">📦 Itens</h2>
+
+<table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="border-collapse: collapse; margin: 16px 0;">
+  <thead>
+    <tr>
+      <th style="background-color: #F9FAFB; padding: 12px 16px; text-align: left; font-size: 12px; font-weight: 600; color: #71717A; text-transform: uppercase; letter-spacing: 0.06em; border-bottom: 2px solid #F1F5F9; font-family: 'Poppins', sans-serif;">Produto</th>
+      <th style="background-color: #F9FAFB; padding: 12px 16px; text-align: center; font-size: 12px; font-weight: 600; color: #71717A; text-transform: uppercase; border-bottom: 2px solid #F1F5F9; font-family: 'Poppins', sans-serif;">Qtd</th>
+      <th style="background-color: #F9FAFB; padding: 12px 16px; text-align: right; font-size: 12px; font-weight: 600; color: #71717A; text-transform: uppercase; border-bottom: 2px solid #F1F5F9; font-family: 'Poppins', sans-serif;">Total</th>
+    </tr>
+  </thead>
+  <tbody>
+    {{#each products}}
+    <tr>
+      <td style="padding: 12px 16px; border-bottom: 1px solid #F1F5F9; font-size: 14px; font-family: 'Poppins', sans-serif;"><strong style="color: #11181C;">{{ name }}</strong></td>
+      <td style="padding: 12px 16px; border-bottom: 1px solid #F1F5F9; font-size: 14px; text-align: center; font-family: 'Poppins', sans-serif; color: #3F3F46;">{{ quantity }}</td>
+      <td style="padding: 12px 16px; border-bottom: 1px solid #F1F5F9; font-size: 14px; text-align: right; font-weight: 600; font-family: 'Poppins', sans-serif; color: #11181C;">{{ total_price }}</td>
+    </tr>
+    {{/each}}
+  </tbody>
+</table>
+
+<!-- Download -->
+<div style="text-align: center; margin: 32px 0;">
+  <a href="{{ invoice.pdf_url }}" style="display: inline-block; padding: 14px 36px; background: linear-gradient(135deg, #F29F40 0%, #E8912E 100%); color: #FFFFFF; text-decoration: none; border-radius: 12px; font-weight: 600; font-size: 15px; font-family: 'Poppins', sans-serif; box-shadow: 0 4px 14px rgba(242, 159, 64, 0.35);">
+    📥 Baixar Nota Fiscal (PDF)
+  </a>
+</div>
+
+{{#invoice.notes}}
+<div style="background-color: #FFFBEB; border-left: 4px solid #F59E0B; padding: 16px 20px; margin: 20px 0; border-radius: 0 12px 12px 0;">
+  <p style="font-weight: 600; margin: 0 0 4px 0; font-size: 14px; color: #92400E; font-family: 'Poppins', sans-serif;">📝 Observações:</p>
+  <p style="margin: 4px 0; font-size: 14px; color: #78350F; font-family: 'Poppins', sans-serif;">{{ invoice.notes }}</p>
+</div>
+{{/invoice.notes}}

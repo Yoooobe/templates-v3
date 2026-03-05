@@ -1,0 +1,64 @@
+<!-- Template: v3-manager-campaign-ended -->
+<!-- Trigger: manager_campaign_ended -->
+<!-- Audience: Gestor -->
+
+<h1 style="text-align: center; font-family: 'Poppins', sans-serif;">🏁 Campanha Encerrada</h1>
+
+<p style="font-family: 'Poppins', sans-serif; color: #3F3F46;">
+  Olá, <strong style="color: #11181C;">{{ manager.name }}</strong>! A campanha <strong style="color: #4F46E5;">{{ campaign.name }}</strong> foi encerrada. Confira o resumo:
+</p>
+
+<!-- Results Summary -->
+<div style="margin: 24px 0;">
+  <table role="presentation" cellpadding="0" cellspacing="0" width="100%">
+    <tr>
+      <td align="center" width="25%">
+        <div style="background-color: #EEF2FF; border-radius: 12px; padding: 14px 8px;">
+          <p style="font-size: 24px; font-weight: 700; color: #4F46E5; margin: 0; font-family: 'Poppins', sans-serif;">{{ total_participants }}</p>
+          <p style="font-size: 10px; color: #71717A; margin: 4px 0 0 0; font-family: 'Poppins', sans-serif;">Participantes</p>
+        </div>
+      </td>
+      <td width="6"></td>
+      <td align="center" width="25%">
+        <div style="background-color: #F0FDF4; border-radius: 12px; padding: 14px 8px;">
+          <p style="font-size: 24px; font-weight: 700; color: #22C55E; margin: 0; font-family: 'Poppins', sans-serif;">{{ total_redemptions }}</p>
+          <p style="font-size: 10px; color: #71717A; margin: 4px 0 0 0; font-family: 'Poppins', sans-serif;">Resgates</p>
+        </div>
+      </td>
+      <td width="6"></td>
+      <td align="center" width="25%">
+        <div style="background-color: #FEF3C7; border-radius: 12px; padding: 14px 8px;">
+          <p style="font-size: 24px; font-weight: 700; color: #F29F40; margin: 0; font-family: 'Poppins', sans-serif;">{{ points_used }}</p>
+          <p style="font-size: 10px; color: #71717A; margin: 4px 0 0 0; font-family: 'Poppins', sans-serif;">Pontos Usados</p>
+        </div>
+      </td>
+      <td width="6"></td>
+      <td align="center" width="25%">
+        <div style="background-color: #FEF2F2; border-radius: 12px; padding: 14px 8px;">
+          <p style="font-size: 24px; font-weight: 700; color: #EF4444; margin: 0; font-family: 'Poppins', sans-serif;">{{ points_remaining }}</p>
+          <p style="font-size: 10px; color: #71717A; margin: 4px 0 0 0; font-family: 'Poppins', sans-serif;">Não Usados</p>
+        </div>
+      </td>
+    </tr>
+  </table>
+</div>
+
+<!-- Engagement Rate -->
+<div style="background: linear-gradient(135deg, #EEF2FF 0%, #FEF3C7 100%); border-radius: 12px; padding: 24px; margin: 24px 0; text-align: center;">
+  <p style="font-size: 14px; color: #71717A; margin: 0 0 4px 0; font-family: 'Poppins', sans-serif;">Taxa de engajamento</p>
+  <p style="font-size: 36px; font-weight: 700; color: #4F46E5; margin: 0; font-family: 'Poppins', sans-serif;">{{ engagement_rate }}%</p>
+</div>
+
+<!-- Details -->
+<div style="background-color: #F9FAFB; border-radius: 12px; padding: 20px; margin: 20px 0;">
+  <table role="presentation" cellpadding="0" cellspacing="0" width="100%">
+    <tr><td style="padding: 6px 0; font-size: 14px; font-family: 'Poppins', sans-serif; color: #71717A;">📅 Período:</td><td style="padding: 6px 0; font-size: 14px; font-family: 'Poppins', sans-serif; text-align: right; color: #11181C;">{{ campaign.start_date }} – {{ campaign.end_date }}</td></tr>
+    <tr><td style="padding: 6px 0; font-size: 14px; font-family: 'Poppins', sans-serif; color: #71717A;">🎁 Produto mais resgatado:</td><td style="padding: 6px 0; font-size: 14px; font-family: 'Poppins', sans-serif; text-align: right; color: #11181C; font-weight: 500;">{{ top_product }}</td></tr>
+  </table>
+</div>
+
+<div style="text-align: center; margin: 32px 0;">
+  <a href="{{ report_url }}" style="display: inline-block; padding: 14px 36px; background: linear-gradient(135deg, #4F46E5 0%, #6366F1 100%); color: #FFFFFF; text-decoration: none; border-radius: 12px; font-weight: 600; font-size: 15px; font-family: 'Poppins', sans-serif; box-shadow: 0 4px 14px rgba(79, 70, 229, 0.35);">
+    📊 Ver Relatório Completo
+  </a>
+</div>

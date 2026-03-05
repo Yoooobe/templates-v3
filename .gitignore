@@ -1,0 +1,25 @@
+# Environment variables (contains API keys)
+.env
+
+# Ruby
+*.gem
+.bundle/
+vendor/bundle/
+Gemfile.lock
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Preview output
+tmp/
+preview_output/
+node_modules/
+.env

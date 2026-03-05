@@ -1,0 +1,51 @@
+<!-- Template: v3-welcome -->
+<!-- Trigger: user_created -->
+
+<h1 style="text-align: center; font-family: 'Poppins', sans-serif;">🎉 Bem-vindo(a) à plataforma!</h1>
+
+<p style="font-family: 'Poppins', sans-serif; color: #3F3F46; text-align: center; font-size: 16px;">
+  Olá, <strong style="color: #11181C;">{{ user.name }}</strong>!<br>
+  Sua conta foi criada com sucesso na <strong style="color: #4F46E5;">{{ tenant.name }}</strong>.
+</p>
+
+<div style="text-align: center; margin: 32px 0;">
+  <a href="{{ login_url }}" style="display: inline-block; padding: 14px 36px; background: linear-gradient(135deg, #F29F40 0%, #E8912E 100%); color: #FFFFFF; text-decoration: none; border-radius: 12px; font-weight: 600; font-size: 15px; font-family: 'Poppins', sans-serif; box-shadow: 0 4px 14px rgba(242, 159, 64, 0.35);">
+    Acessar Minha Conta →
+  </a>
+</div>
+
+<div style="background-color: #F9FAFB; border-left: 4px solid #4F46E5; padding: 16px 20px; margin: 24px 0; border-radius: 0 12px 12px 0;">
+  <p style="font-weight: 600; margin: 0 0 8px 0; font-size: 14px; color: #4F46E5; font-family: 'Poppins', sans-serif;">📋 Dados da sua conta</p>
+  <p style="margin: 4px 0; font-size: 14px; color: #3F3F46; font-family: 'Poppins', sans-serif;"><strong>Nome:</strong> {{ user.name }}</p>
+  <p style="margin: 4px 0; font-size: 14px; color: #3F3F46; font-family: 'Poppins', sans-serif;"><strong>E-mail:</strong> {{ user.email }}</p>
+</div>
+
+<h2 style="font-family: 'Poppins', sans-serif; color: #11181C; font-size: 18px;">O que você pode fazer</h2>
+
+<table role="presentation" cellpadding="0" cellspacing="0" width="100%">
+  <tr>
+    <td style="padding: 12px 0; vertical-align: top; width: 40px; font-size: 20px;">🛍️</td>
+    <td style="padding: 12px 0; font-family: 'Poppins', sans-serif;">
+      <strong style="color: #11181C;">Explorar o Catálogo</strong><br>
+      <span style="color: #71717A; font-size: 13px;">Navegue por produtos personalizáveis disponíveis para você</span>
+    </td>
+  </tr>
+  <tr>
+    <td style="padding: 12px 0; vertical-align: top; width: 40px; font-size: 20px;">🎁</td>
+    <td style="padding: 12px 0; font-family: 'Poppins', sans-serif;">
+      <strong style="color: #11181C;">Resgatar Brindes</strong><br>
+      <span style="color: #71717A; font-size: 13px;">Use seus pontos para escolher produtos exclusivos</span>
+    </td>
+  </tr>
+  <tr>
+    <td style="padding: 12px 0; vertical-align: top; width: 40px; font-size: 20px;">📦</td>
+    <td style="padding: 12px 0; font-family: 'Poppins', sans-serif;">
+      <strong style="color: #11181C;">Acompanhar Pedidos</strong><br>
+      <span style="color: #71717A; font-size: 13px;">Veja o status dos seus resgates em tempo real</span>
+    </td>
+  </tr>
+</table>
+
+<p style="color: #71717A; font-size: 13px; font-family: 'Poppins', sans-serif; text-align: center; margin-top: 24px;">
+  Se você não solicitou a criação desta conta, por favor ignore este e-mail.
+</p>

@@ -1,0 +1,145 @@
+# =============================================================================
+# Trigger Mapping – Events → Email Templates
+# =============================================================================
+# Maps application events to Postmark template aliases.
+# Organized by audience: General, Member, Manager
+# =============================================================================
+
+triggers:
+
+  # ═══════════════════════════════════════════════════════════════════════
+  # GERAIS (Membro + Gestor)
+  # ═══════════════════════════════════════════════════════════════════════
+
+  user_created:
+    template_alias: "v3-welcome"
+    audience: "all"
+    description: "Enviado quando um novo usuário é criado no tenant"
+    required_data: [user.name, user.email, login_url]
+    optional_data: [custom_message]
+
+  password_reset_requested:
+    template_alias: "v3-password-reset"
+    audience: "all"
+    description: "Enviado quando o usuário solicita redefinição de senha"
+    required_data: [user.name, user.email, reset_url, expiration_hours]
+
+  order_created:
+    template_alias: "v3-order-confirmation"
+    audience: "all"
+    description: "Enviado quando um novo pedido é criado"
+    required_data: [user.name, user.email, order.number, order.date, order.total, order.subtotal, order.payment_method, order.shipping_address, products]
+    optional_data: [order.shipping, order.discount, order.tracking_url, custom_message, action_url]
+
+  order_status_changed:
+    template_alias: "v3-order-status-update"
+    audience: "all"
+    description: "Enviado quando o status de um pedido é alterado"
+    required_data: [user.name, user.email, order.number, order.date, new_status, status_message]
+    optional_data: [order.tracking_url, action_url, custom_message]
+
+  invoice_generated:
+    template_alias: "v3-invoice"
+    audience: "all"
+    description: "Enviado quando uma nota fiscal é emitida"
+    required_data: [user.name, user.email, order.number, order.total, invoice.number, invoice.date, invoice.due_date, invoice.pdf_url, products]
+    optional_data: [invoice.notes, custom_message]
+
+  # ═══════════════════════════════════════════════════════════════════════
+  # MEMBRO
+  # ═══════════════════════════════════════════════════════════════════════
+
+  member_onboarding_invite:
+    template_alias: "v3-member-onboarding-invite"
+    audience: "member"
+    description: "Convite para o membro resgatar seu brinde de onboarding"
+    required_data: [user.name, user.email, store_url]
+    optional_data: [welcome_message, points_balance, custom_message]
+
+  member_points_added:
+    template_alias: "v3-member-points-added"
+    audience: "member"
+    description: "Notificação de pontos adicionados à conta do membro"
+    required_data: [user.name, user.email, points_added, points_balance]
+    optional_data: [points_expiring, reason, campaign_name, store_url, custom_message]
+
+  member_points_spent:
+    template_alias: "v3-member-points-spent"
+    audience: "member"
+    description: "Confirmação de pontos gastos em resgate de brinde"
+    required_data: [user.name, user.email, points_spent, points_balance, product.name, product.points_cost, transaction.id, transaction.date]
+    optional_data: [product.image_url, product.variant, shipping_address, order_url, custom_message]
+
+  member_order_status_updated:
+    template_alias: "v3-member-order-status"
+    audience: "member"
+    description: "Atualização de status da entrega do brinde (até a entrega)"
+    required_data: [user.name, user.email, order.number, order.status, product.name]
+    optional_data: [order.date, status_message, tracking_url, status_history, custom_message]
+
+  member_campaign_invite:
+    template_alias: "v3-member-campaign-invite"
+    audience: "member"
+    description: "Convite para o membro participar de uma nova campanha"
+    required_data: [user.name, user.email, campaign.name, store_url]
+    optional_data: [campaign.description, campaign.start_date, campaign.end_date, points_available, invite_message, custom_message]
+
+  # ═══════════════════════════════════════════════════════════════════════
+  # GESTOR
+  # ═══════════════════════════════════════════════════════════════════════
+
+  manager_user_created:
+    template_alias: "v3-manager-user-created"
+    audience: "manager"
+    description: "Notifica o gestor que um novo membro foi criado"
+    required_data: [manager.name, manager.email, new_user.name, new_user.email, created_at]
+    optional_data: [new_user.department, total_members, admin_url]
+
+  manager_campaign_sent:
+    template_alias: "v3-manager-campaign-sent"
+    audience: "manager"
+    description: "Confirma que a campanha foi enviada aos membros"
+    required_data: [manager.name, manager.email, campaign.name, total_recipients, points_per_member, total_points, sent_at]
+    optional_data: [campaign.start_date, campaign.end_date, campaign_url]
+
+  manager_campaign_started:
+    template_alias: "v3-manager-campaign-started"
+    audience: "manager"
+    description: "Notifica que a campanha está ativa e membros podem participar"
+    required_data: [manager.name, manager.email, campaign.name, campaign.start_date, campaign.end_date]
+    optional_data: [total_participants, total_products, campaign_url]
+
+  manager_campaign_ended:
+    template_alias: "v3-manager-campaign-ended"
+    audience: "manager"
+    description: "Relatório de encerramento da campanha com métricas"
+    required_data: [manager.name, manager.email, campaign.name, campaign.start_date, campaign.end_date, total_participants, total_redemptions, points_used, points_remaining, engagement_rate]
+    optional_data: [top_product, report_url]
+
+  manager_gift_created:
+    template_alias: "v3-manager-gift-created"
+    audience: "manager"
+    description: "Confirma que um envio de presente foi registrado"
+    required_data: [manager.name, manager.email, gift.product_name, gift.recipient_name, gift.recipient_email, gift.date]
+    optional_data: [gift.message, admin_url]
+
+  manager_gift_status_changed:
+    template_alias: "v3-manager-gift-status"
+    audience: "manager"
+    description: "Atualização de status de um presente solicitado"
+    required_data: [manager.name, manager.email, gift.product_name, gift.recipient_name, gift.status, gift.order_number, gift.date]
+    optional_data: [status_message, tracking_url, admin_url]
+
+  manager_crud_update:
+    template_alias: "v3-manager-crud-update"
+    audience: "manager"
+    description: "Notificação de CRUD (criação, atualização, exclusão) de recursos"
+    required_data: [manager.name, manager.email, resource_type, resource_name, performed_by, performed_at]
+    optional_data: [is_create, is_update, is_delete, changes, admin_url]
+
+  manager_low_stock:
+    template_alias: "v3-manager-low-stock"
+    audience: "manager"
+    description: "Alerta de estoque baixo de produtos na loja"
+    required_data: [manager.name, manager.email, total_low_stock, products]
+    optional_data: [inventory_url]

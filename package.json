@@ -1,0 +1,20 @@
+{
+  "name": "templates",
+  "version": "1.0.0",
+  "description": "Templates de e-mail transacional para a plataforma **4Unik** (v3), integrados com [Postmark](https://postmarkapp.com).",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs",
+    "lib": "lib"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "express": "^5.2.1"
+  }
+}

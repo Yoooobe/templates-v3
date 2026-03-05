@@ -1,0 +1,77 @@
+<!-- Template: v3-member-order-status -->
+<!-- Trigger: member_order_status_updated -->
+<!-- Audience: Membro -->
+
+<h1 style="text-align: center; font-family: 'Poppins', sans-serif;">📦 Atualização da Entrega</h1>
+
+<p style="font-family: 'Poppins', sans-serif; color: #3F3F46;">
+  Olá, <strong style="color: #11181C;">{{ user.name }}</strong>! Temos novidades sobre seu pedido.
+</p>
+
+<!-- Status Badge -->
+<div style="text-align: center; margin: 28px 0;">
+  <span style="display: inline-block; padding: 10px 28px; border-radius: 9999px; font-weight: 600; font-size: 16px; font-family: 'Poppins', sans-serif; background: linear-gradient(135deg, #4F46E5, #6366F1); color: #FFFFFF;">
+    {{ order.status }}
+  </span>
+</div>
+
+<!-- Order Info -->
+<div style="background-color: #F9FAFB; border-left: 4px solid #4F46E5; padding: 16px 20px; margin: 24px 0; border-radius: 0 12px 12px 0;">
+  <table role="presentation" cellpadding="0" cellspacing="0" width="100%">
+    <tr>
+      <td style="padding: 4px 0; font-size: 14px; font-family: 'Poppins', sans-serif; color: #3F3F46;"><strong>📋 Pedido:</strong></td>
+      <td style="padding: 4px 0; font-size: 14px; font-family: 'Poppins', sans-serif; text-align: right; color: #11181C; font-weight: 600;">{{ order.number }}</td>
+    </tr>
+    <tr>
+      <td style="padding: 4px 0; font-size: 14px; font-family: 'Poppins', sans-serif; color: #3F3F46;"><strong>🎁 Brinde:</strong></td>
+      <td style="padding: 4px 0; font-size: 14px; font-family: 'Poppins', sans-serif; text-align: right; color: #3F3F46;">{{ product.name }}</td>
+    </tr>
+    <tr>
+      <td style="padding: 4px 0; font-size: 14px; font-family: 'Poppins', sans-serif; color: #3F3F46;"><strong>📅 Data do resgate:</strong></td>
+      <td style="padding: 4px 0; font-size: 14px; font-family: 'Poppins', sans-serif; text-align: right; color: #3F3F46;">{{ order.date }}</td>
+    </tr>
+  </table>
+</div>
+
+<!-- Status Timeline -->
+<h2 style="font-family: 'Poppins', sans-serif; color: #11181C; font-size: 16px;">📍 Progresso</h2>
+
+<table role="presentation" cellpadding="0" cellspacing="0" width="100%">
+  {{#each status_history}}
+  <tr>
+    <td style="width: 40px; vertical-align: top; padding: 8px 0;">
+      {{#is_current}}
+      <div style="width: 20px; height: 20px; border-radius: 50%; background: linear-gradient(135deg, #4F46E5, #6366F1); margin: 2px auto;"></div>
+      {{/is_current}}
+      {{^is_current}}
+      {{#is_completed}}
+      <div style="width: 20px; height: 20px; border-radius: 50%; background-color: #22C55E; margin: 2px auto; text-align: center; line-height: 20px; font-size: 12px; color: white;">✓</div>
+      {{/is_completed}}
+      {{^is_completed}}
+      <div style="width: 20px; height: 20px; border-radius: 50%; background-color: #E5E7EB; margin: 2px auto;"></div>
+      {{/is_completed}}
+      {{/is_current}}
+    </td>
+    <td style="padding: 8px 0 8px 8px; font-family: 'Poppins', sans-serif;">
+      <strong style="font-size: 14px; color: #11181C;">{{ status_name }}</strong>
+      {{#status_date}}<br><span style="font-size: 12px; color: #71717A;">{{ status_date }}</span>{{/status_date}}
+    </td>
+  </tr>
+  {{/each}}
+</table>
+
+<!-- Status Message -->
+{{#status_message}}
+<div style="background: linear-gradient(135deg, #EEF2FF 0%, #FEF3C7 100%); border-radius: 12px; padding: 20px 24px; margin: 24px 0;">
+  <p style="margin: 0; font-size: 15px; color: #3730A3; font-family: 'Poppins', sans-serif;">💬 {{ status_message }}</p>
+</div>
+{{/status_message}}
+
+<!-- Tracking -->
+{{#tracking_url}}
+<div style="text-align: center; margin: 32px 0;">
+  <a href="{{ tracking_url }}" style="display: inline-block; padding: 14px 36px; background: linear-gradient(135deg, #F29F40 0%, #E8912E 100%); color: #FFFFFF; text-decoration: none; border-radius: 12px; font-weight: 600; font-size: 15px; font-family: 'Poppins', sans-serif; box-shadow: 0 4px 14px rgba(242, 159, 64, 0.35);">
+    🚚 Rastrear Entrega
+  </a>
+</div>
+{{/tracking_url}}

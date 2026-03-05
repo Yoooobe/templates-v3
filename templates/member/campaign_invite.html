@@ -1,0 +1,62 @@
+<!-- Template: v3-member-campaign-invite -->
+<!-- Trigger: member_campaign_invite -->
+<!-- Audience: Membro -->
+
+<h1 style="text-align: center; font-family: 'Poppins', sans-serif;">🎉 Você foi selecionado!</h1>
+
+<p style="font-family: 'Poppins', sans-serif; color: #3F3F46; text-align: center; font-size: 16px;">
+  Olá, <strong style="color: #11181C;">{{ user.name }}</strong>!
+</p>
+
+<!-- Campaign Banner -->
+<div style="background: linear-gradient(135deg, #4F46E5 0%, #6366F1 30%, #F29F40 100%); border-radius: 16px; padding: 32px; margin: 24px 0; text-align: center;">
+  <p style="font-size: 22px; font-weight: 700; color: #FFFFFF; margin: 0 0 8px 0; font-family: 'Poppins', sans-serif; line-height: 1.3;">
+    {{ campaign.name }}
+  </p>
+  {{#campaign.description}}
+  <p style="font-size: 15px; color: rgba(255,255,255,0.9); margin: 8px 0 0 0; font-family: 'Poppins', sans-serif;">
+    {{ campaign.description }}
+  </p>
+  {{/campaign.description}}
+</div>
+
+{{#invite_message}}
+<p style="font-family: 'Poppins', sans-serif; color: #3F3F46; font-size: 15px; line-height: 1.7;">
+  {{ invite_message }}
+</p>
+{{/invite_message}}
+
+<!-- Campaign Details -->
+<div style="background-color: #F9FAFB; border-radius: 12px; padding: 20px; margin: 24px 0;">
+  <table role="presentation" cellpadding="0" cellspacing="0" width="100%">
+    {{#campaign.start_date}}
+    <tr>
+      <td style="padding: 6px 0; font-size: 14px; font-family: 'Poppins', sans-serif; color: #71717A;">📅 Início:</td>
+      <td style="padding: 6px 0; font-size: 14px; font-family: 'Poppins', sans-serif; text-align: right; color: #11181C; font-weight: 500;">{{ campaign.start_date }}</td>
+    </tr>
+    {{/campaign.start_date}}
+    {{#campaign.end_date}}
+    <tr>
+      <td style="padding: 6px 0; font-size: 14px; font-family: 'Poppins', sans-serif; color: #71717A;">🏁 Término:</td>
+      <td style="padding: 6px 0; font-size: 14px; font-family: 'Poppins', sans-serif; text-align: right; color: #11181C; font-weight: 500;">{{ campaign.end_date }}</td>
+    </tr>
+    {{/campaign.end_date}}
+    {{#points_available}}
+    <tr>
+      <td style="padding: 6px 0; font-size: 14px; font-family: 'Poppins', sans-serif; color: #71717A;">⭐ Pontos disponíveis:</td>
+      <td style="padding: 6px 0; font-size: 14px; font-family: 'Poppins', sans-serif; text-align: right; color: #4F46E5; font-weight: 700;">{{ points_available }}</td>
+    </tr>
+    {{/points_available}}
+  </table>
+</div>
+
+<!-- CTA -->
+<div style="text-align: center; margin: 32px 0;">
+  <a href="{{ store_url }}" style="display: inline-block; padding: 16px 40px; background: linear-gradient(135deg, #F29F40 0%, #E8912E 100%); color: #FFFFFF; text-decoration: none; border-radius: 12px; font-weight: 600; font-size: 16px; font-family: 'Poppins', sans-serif; box-shadow: 0 4px 14px rgba(242, 159, 64, 0.35);">
+    🛍️ Acessar a Loja
+  </a>
+</div>
+
+<p style="color: #71717A; font-size: 13px; font-family: 'Poppins', sans-serif; text-align: center;">
+  Este convite foi enviado por {{ tenant.name }}. Aproveite e escolha seus brindes!
+</p>
