@@ -129,8 +129,16 @@ function refreshPreview() {
   if (currentTemplate.category !== 'layout') html = injectDesignTokens(layoutHtml).replace('{{{ @content }}}', html).replace('{{{@content}}}', html);
   html = substituteVars(html, sampleData);
   var iframe = document.getElementById('preview-frame');
+  iframe.onload = function() {
+    try {
+      var b = iframe.contentDocument.body;
+      if (b) {
+        iframe.style.height = '10px'; // reset briefly to measure shrink
+        iframe.style.height = Math.max(400, b.scrollHeight) + 'px';
+      }
+    } catch(e){}
+  };
   iframe.srcdoc = html;
-  iframe.onload = function() { try { var b = iframe.contentDocument.body; if (b) iframe.style.height = Math.max(400, b.scrollHeight + 40) + 'px'; } catch(e){} };
 }
 
 function injectDesignTokens(html) {

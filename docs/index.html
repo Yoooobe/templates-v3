@@ -931,7 +931,14 @@
             .replace("{{{ @content }}}", html)
             .replace("{{{@content}}}", html);
         html = substituteVars(html, sampleData);
-        document.getElementById("preview-frame").srcdoc = html;
+        var frame = document.getElementById("preview-frame");
+        frame.onload = function() {
+          if (frame.contentWindow && frame.contentWindow.document && frame.contentWindow.document.body) {
+            frame.style.height = "10px"; // reset briefly to measure shrink
+            frame.style.height = frame.contentWindow.document.body.scrollHeight + "px";
+          }
+        };
+        frame.srcdoc = html;
       }
 
       function injectDesignTokens(html) {

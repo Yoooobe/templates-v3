@@ -451,6 +451,7 @@ body {
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
   transition: max-width 0.3s ease;
   min-height: 400px;
+  overflow: hidden;
 }
 #preview-frame.mobile {
   max-width: 375px;
@@ -1059,8 +1060,12 @@ body {
   font-size: 14px;
   font-weight: 600;
 }
-.sync-ok { color: #22c55e; }
-.sync-fail { color: #ef4444; }
+.sync-ok {
+  color: #22c55e;
+}
+.sync-fail {
+  color: #ef4444;
+}
 .syncing-text {
   animation: pulse 1s infinite;
 }
