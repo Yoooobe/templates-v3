@@ -32,7 +32,7 @@ gem 'postmark-rails', '~> 0.22'
 
 ```bash
 # .env
-POSTMARK_API_TOKEN=seu-token-do-server-v3
+POSTMARK_API_TOKEN=b745d514-d434-486f-ae38-63c70b0e6d19
 POSTMARK_SENDER=noreply@yoobe.me
 POSTMARK_MESSAGE_STREAM=outbound
 PLATFORM_URL=https://4unik.yoobe.me

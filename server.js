@@ -13,15 +13,24 @@ const DESIGN_CONFIG_PATH = path.join(ROOT, 'config', 'design.json');
 const UPLOADS_DIR = path.join(ROOT, 'public', 'uploads');
 
 // Load env vars from .env
-try {
-  var envFile = fs.readFileSync(path.join(ROOT, '.env'), 'utf-8');
-  envFile.split('\n').forEach(function(line) {
-    line = line.trim();
-    if (!line || line.startsWith('#')) return;
-    var eq = line.indexOf('=');
-    if (eq > 0) process.env[line.substring(0, eq).trim()] = line.substring(eq + 1).trim();
-  });
-} catch(e) { /* no .env */ }
+function loadEnv(filePath) {
+  try {
+    var envFile = fs.readFileSync(filePath, 'utf-8');
+    envFile.split('\n').forEach(function(line) {
+      line = line.trim();
+      if (!line || line.startsWith('#')) return;
+      var eq = line.indexOf('=');
+      if (eq > 0) {
+        var key = line.substring(0, eq).trim();
+        var val = line.substring(eq + 1).trim();
+        if (!process.env[key]) process.env[key] = val;
+      }
+    });
+    return true;
+  } catch(e) { return false; }
+}
+// Try multiple locations
+loadEnv(path.join(ROOT, '.env')) || loadEnv(path.join(ROOT, 'config', '.env'));
 
 app.use(express.json({ limit: '10mb' }));
 app.use(express.static(path.join(ROOT, 'public')));
