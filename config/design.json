@@ -1,0 +1,28 @@
+{
+  "colors": {
+    "primary": "#fdfcfc",
+    "secondary": "#4F46E5",
+    "gradientStart": "#6366F1",
+    "gradientEnd": "#fafdff",
+    "background": "#FFFFFF",
+    "backgroundAlt": "#F9FAFB",
+    "textPrimary": "#11181C",
+    "textMuted": "#71717A",
+    "success": "#e5b561",
+    "danger": "#EF4444"
+  },
+  "fonts": {
+    "heading": "Poppins",
+    "body": "Poppins"
+  },
+  "images": {
+    "logo": "https://catalogo.yoobe.co/yoobe-logo-header.svg",
+    "logoWidth": "180",
+    "logoHeight": "40"
+  },
+  "borderRadius": {
+    "cards": "12",
+    "buttons": "12",
+    "badges": "9999"
+  }
+}

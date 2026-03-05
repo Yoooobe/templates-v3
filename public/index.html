@@ -6,154 +6,8 @@
   <title>Templates V3 – Editor</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: 'Poppins', sans-serif; background: #0F0F1A; color: #E2E8F0; height: 100vh; overflow: hidden; }
-
-    /* ─── App Layout ──────────────────────────────────────── */
-    .app { display: grid; grid-template-columns: 280px 1fr; grid-template-rows: 60px 1fr; height: 100vh; }
-
-    /* ─── Header ──────────────────────────────────────────── */
-    .header {
-      grid-column: 1 / -1; background: linear-gradient(135deg, #1A1A2E 0%, #16213E 100%);
-      border-bottom: 1px solid rgba(99,102,241,0.2); display: flex; align-items: center; padding: 0 24px; gap: 16px; z-index: 10;
-    }
-    .header-logo { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 18px; background: linear-gradient(135deg, #6366F1, #F29F40); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
-    .header-logo span { font-size: 22px; }
-    .header-nav { display: flex; gap: 4px; margin-left: 32px; }
-    .header-nav-btn { padding: 8px 18px; font-size: 13px; font-weight: 500; color: #71717A; cursor: pointer; border-radius: 10px; transition: all 0.15s; font-family: 'Poppins', sans-serif; border: none; background: none; }
-    .header-nav-btn:hover { color: #E2E8F0; background: rgba(255,255,255,0.04); }
-    .header-nav-btn.active { color: #FFF; background: rgba(99,102,241,0.15); border: 1px solid rgba(99,102,241,0.25); }
-    .header-info { margin-left: auto; display: flex; align-items: center; gap: 12px; }
-    .header-badge { display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; border-radius: 9999px; font-size: 12px; font-weight: 500; background: rgba(99,102,241,0.15); color: #818CF8; border: 1px solid rgba(99,102,241,0.25); }
-    .save-status { font-size: 12px; color: #71717A; transition: all 0.3s; }
-    .save-status.saved { color: #22C55E; }
-    .save-status.saving { color: #F29F40; }
-
-    /* ─── Sidebar ─────────────────────────────────────────── */
-    .sidebar { background: #12121F; border-right: 1px solid rgba(99,102,241,0.1); overflow-y: auto; padding: 16px 0; }
-    .sidebar::-webkit-scrollbar { width: 4px; }
-    .sidebar::-webkit-scrollbar-thumb { background: rgba(99,102,241,0.3); border-radius: 4px; }
-    .sidebar-group { margin-bottom: 8px; }
-    .sidebar-group-title { padding: 8px 20px; font-size: 10px; text-transform: uppercase; letter-spacing: 0.12em; font-weight: 600; color: #71717A; }
-    .sidebar-item { display: flex; align-items: center; gap: 10px; padding: 9px 20px; cursor: pointer; font-size: 13px; color: #A1A1AA; transition: all 0.15s; border-left: 3px solid transparent; }
-    .sidebar-item:hover { background: rgba(99,102,241,0.06); color: #E2E8F0; }
-    .sidebar-item.active { background: rgba(99,102,241,0.1); color: #FFF; border-left-color: #6366F1; font-weight: 500; }
-    .sidebar-item .icon { font-size: 16px; flex-shrink: 0; width: 22px; text-align: center; }
-    .sidebar-item .label { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .cat-badge { font-size: 9px; padding: 2px 6px; border-radius: 4px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; }
-    .cat-badge.member { background: rgba(242,159,64,0.15); color: #F29F40; }
-    .cat-badge.manager { background: rgba(99,102,241,0.15); color: #818CF8; }
-    .cat-badge.layout { background: rgba(34,197,94,0.15); color: #22C55E; }
-
-    /* ─── Page Containers ─────────────────────────────────── */
-    .page { display: none; overflow: hidden; }
-    .page.active { display: grid; }
-
-    /* ─── Editor Page ─────────────────────────────────────── */
-    .page-editor { grid-template-rows: 48px 1fr; }
-    .toolbar { display: flex; align-items: center; gap: 8px; padding: 0 20px; background: #16162A; border-bottom: 1px solid rgba(99,102,241,0.1); }
-    .toolbar-tab { padding: 6px 16px; font-size: 12px; font-weight: 500; color: #71717A; cursor: pointer; border-radius: 8px; transition: all 0.15s; font-family: 'Poppins', sans-serif; border: none; background: none; }
-    .toolbar-tab:hover { color: #E2E8F0; background: rgba(255,255,255,0.04); }
-    .toolbar-tab.active { color: #FFF; background: rgba(99,102,241,0.15); }
-    .toolbar-sep { width: 1px; height: 20px; background: rgba(255,255,255,0.08); margin: 0 4px; }
-    .toolbar-btn { padding: 6px 14px; font-size: 12px; font-weight: 600; border-radius: 8px; border: none; cursor: pointer; font-family: 'Poppins', sans-serif; transition: all 0.15s; display: inline-flex; align-items: center; gap: 6px; }
-    .toolbar-btn.save { background: linear-gradient(135deg, #F29F40, #E8912E); color: #FFF; margin-left: auto; }
-    .toolbar-btn.save:hover { box-shadow: 0 4px 14px rgba(242,159,64,0.35); transform: translateY(-1px); }
-
-    .content { display: grid; overflow: hidden; }
-    .content.split { grid-template-columns: 1fr 1fr; }
-    .content.preview-only { grid-template-columns: 1fr; }
-    .content.editor-only { grid-template-columns: 1fr; }
-
-    .editor-panel { display: flex; flex-direction: column; overflow: hidden; border-right: 1px solid rgba(99,102,241,0.1); }
-    .panel-header { padding: 8px 16px; font-size: 11px; font-weight: 600; color: #71717A; text-transform: uppercase; letter-spacing: 0.08em; background: rgba(0,0,0,0.2); border-bottom: 1px solid rgba(99,102,241,0.08); display: flex; align-items: center; gap: 6px; }
-    .panel-header .dot { width: 6px; height: 6px; border-radius: 50%; background: #22C55E; }
-
-    #code-editor { flex: 1; width: 100%; background: #0D0D17; color: #C4B5FD; border: none; padding: 16px; font-family: 'JetBrains Mono', monospace; font-size: 13px; line-height: 1.7; resize: none; outline: none; tab-size: 2; overflow-y: auto; }
-    #code-editor::-webkit-scrollbar { width: 6px; }
-    #code-editor::-webkit-scrollbar-thumb { background: rgba(99,102,241,0.25); border-radius: 4px; }
-
-    .preview-panel { display: flex; flex-direction: column; overflow: hidden; background: #E5E7EB; }
-    .preview-panel .panel-header { background: #1A1A2E; }
-    .device-buttons { margin-left: auto; display: flex; gap: 4px; }
-    .device-btn { padding: 3px 10px; font-size: 11px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.08); background: none; color: #71717A; cursor: pointer; font-family: 'Poppins', sans-serif; }
-    .device-btn.active { background: rgba(99,102,241,0.15); color: #818CF8; border-color: rgba(99,102,241,0.3); }
-    .preview-frame-wrapper { flex: 1; display: flex; justify-content: center; align-items: flex-start; padding: 24px; overflow-y: auto; background: #D4D4D8; }
-    #preview-frame { width: 100%; max-width: 640px; border: none; background: #FFF; border-radius: 12px; box-shadow: 0 8px 32px rgba(0,0,0,0.15); transition: max-width 0.3s ease; min-height: 400px; }
-    #preview-frame.mobile { max-width: 375px; }
-    #preview-frame.tablet { max-width: 480px; }
-
-    .empty-state { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; gap: 16px; color: #52525B; }
-    .empty-state .icon { font-size: 48px; opacity: 0.5; }
-
-    /* ─── Chicken Corn Page ───────────────────────────────── */
-    .page-chickencorn { grid-template-columns: 260px 1fr; overflow: hidden; }
-    .doc-nav { background: #12121F; border-right: 1px solid rgba(99,102,241,0.1); overflow-y: auto; padding: 20px 0; }
-    .doc-nav-title { padding: 12px 20px; font-size: 14px; font-weight: 700; color: #F29F40; display: flex; align-items: center; gap: 8px; }
-    .doc-nav-item { display: block; padding: 10px 20px; font-size: 13px; color: #A1A1AA; cursor: pointer; transition: all 0.15s; border-left: 3px solid transparent; text-decoration: none; }
-    .doc-nav-item:hover { background: rgba(99,102,241,0.06); color: #E2E8F0; }
-    .doc-nav-item.active { background: rgba(99,102,241,0.1); color: #FFF; border-left-color: #F29F40; }
-    .doc-nav-section { padding: 16px 20px 6px; font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: #52525B; font-weight: 600; }
-    .doc-nav-download { display: block; margin: 16px 16px 8px; padding: 10px 16px; background: linear-gradient(135deg, #F29F40, #E8912E); color: #FFF; border-radius: 10px; font-size: 13px; font-weight: 600; text-align: center; text-decoration: none; cursor: pointer; border: none; font-family: 'Poppins', sans-serif; transition: all 0.2s; }
-    .doc-nav-download:hover { box-shadow: 0 4px 14px rgba(242,159,64,0.35); transform: translateY(-1px); }
-    .doc-nav-copy { display: block; margin: 8px 16px; padding: 10px 16px; background: rgba(99,102,241,0.15); color: #818CF8; border-radius: 10px; font-size: 13px; font-weight: 600; text-align: center; text-decoration: none; cursor: pointer; border: 1px solid rgba(99,102,241,0.25); font-family: 'Poppins', sans-serif; transition: all 0.2s; }
-    .doc-nav-copy:hover { background: rgba(99,102,241,0.25); color: #A5B4FC; }
-
-    .doc-content { overflow-y: auto; padding: 32px 48px; background: #0F0F1A; }
-    .doc-content::-webkit-scrollbar { width: 6px; }
-    .doc-content::-webkit-scrollbar-thumb { background: rgba(99,102,241,0.25); border-radius: 4px; }
-
-    /* Markdown styling */
-    .md-content h1 { font-size: 28px; font-weight: 700; margin: 0 0 16px; background: linear-gradient(135deg, #F29F40, #6366F1); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-    .md-content h2 { font-size: 20px; font-weight: 600; margin: 32px 0 12px; color: #E2E8F0; padding-bottom: 8px; border-bottom: 1px solid rgba(99,102,241,0.15); }
-    .md-content h3 { font-size: 16px; font-weight: 600; margin: 24px 0 8px; color: #C4B5FD; }
-    .md-content h4 { font-size: 14px; font-weight: 600; margin: 16px 0 6px; color: #A1A1AA; }
-    .md-content p { font-size: 14px; line-height: 1.7; color: #A1A1AA; margin: 8px 0; }
-    .md-content strong { color: #E2E8F0; }
-    .md-content a { color: #818CF8; text-decoration: none; }
-    .md-content a:hover { text-decoration: underline; }
-    .md-content ul, .md-content ol { padding-left: 20px; margin: 8px 0; }
-    .md-content li { font-size: 14px; color: #A1A1AA; margin: 4px 0; line-height: 1.6; }
-    .md-content code { background: rgba(99,102,241,0.1); color: #C4B5FD; padding: 2px 6px; border-radius: 4px; font-family: 'JetBrains Mono', monospace; font-size: 13px; }
-    .md-content pre { background: #0A0A14; border: 1px solid rgba(99,102,241,0.12); border-radius: 10px; padding: 16px; margin: 12px 0; overflow-x: auto; }
-    .md-content pre code { background: none; padding: 0; color: #C4B5FD; font-size: 12px; line-height: 1.6; }
-    .md-content table { width: 100%; border-collapse: collapse; margin: 12px 0; }
-    .md-content th { background: rgba(99,102,241,0.08); padding: 10px 14px; text-align: left; font-size: 12px; font-weight: 600; color: #818CF8; text-transform: uppercase; letter-spacing: 0.06em; border-bottom: 2px solid rgba(99,102,241,0.15); }
-    .md-content td { padding: 10px 14px; font-size: 13px; color: #A1A1AA; border-bottom: 1px solid rgba(255,255,255,0.04); }
-    .md-content blockquote { border-left: 3px solid #F29F40; padding: 12px 16px; margin: 12px 0; background: rgba(242,159,64,0.06); border-radius: 0 10px 10px 0; }
-    .md-content blockquote p { color: #F29F40; }
-    .md-content hr { border: none; border-top: 1px solid rgba(99,102,241,0.12); margin: 24px 0; }
-
-    /* ─── Design Page ─────────────────────────────────────── */
-    .page-design { grid-template-columns: 320px 1fr; overflow: hidden; }
-    .design-panel { background: #12121F; border-right: 1px solid rgba(99,102,241,0.1); overflow-y: auto; padding: 20px; }
-    .design-panel::-webkit-scrollbar { width: 4px; }
-    .design-panel::-webkit-scrollbar-thumb { background: rgba(99,102,241,0.3); border-radius: 4px; }
-    .design-section { margin-bottom: 28px; }
-    .design-section-title { font-size: 12px; text-transform: uppercase; letter-spacing: 0.1em; font-weight: 600; color: #71717A; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
-    .design-section-title span { font-size: 16px; }
-    .design-field { margin-bottom: 14px; }
-    .design-field label { display: block; font-size: 12px; color: #A1A1AA; margin-bottom: 5px; font-weight: 500; }
-    .design-field input[type="text"], .design-field input[type="number"], .design-field select {
-      width: 100%; padding: 8px 12px; background: #0D0D17; border: 1px solid rgba(99,102,241,0.15); border-radius: 8px; color: #E2E8F0; font-family: 'JetBrains Mono', monospace; font-size: 13px; outline: none; transition: border-color 0.2s;
-    }
-    .design-field input:focus, .design-field select:focus { border-color: rgba(99,102,241,0.4); }
-    .design-field select { cursor: pointer; }
-    .color-row { display: flex; align-items: center; gap: 8px; }
-    .color-swatch { width: 32px; height: 32px; border-radius: 8px; border: 2px solid rgba(255,255,255,0.1); cursor: pointer; flex-shrink: 0; }
-    .color-row input[type="text"] { flex: 1; }
-    .color-row input[type="color"] { width: 0; height: 0; opacity: 0; position: absolute; }
-    .design-preview-area { flex: 1; overflow-y: auto; padding: 32px; background: #D4D4D8; display: flex; justify-content: center; align-items: flex-start; }
-    .design-preview-card { width: 100%; max-width: 640px; background: #FFF; border-radius: 12px; box-shadow: 0 8px 32px rgba(0,0,0,0.15); min-height: 400px; overflow: hidden; }
-    .design-save-btn { width: 100%; padding: 12px; background: linear-gradient(135deg, #F29F40, #E8912E); color: #FFF; border: none; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; font-family: 'Poppins', sans-serif; margin-top: 8px; transition: all 0.2s; }
-    .design-save-btn:hover { box-shadow: 0 4px 14px rgba(242,159,64,0.35); transform: translateY(-1px); }
-
-    /* ─── Toast ────────────────────────────────────────────── */
-    .toast { position: fixed; bottom: 20px; right: 20px; background: rgba(34,197,94,0.95); color: #FFF; padding: 10px 20px; border-radius: 10px; font-size: 13px; font-weight: 500; font-family: 'Poppins', sans-serif; box-shadow: 0 4px 14px rgba(34,197,94,0.3); transform: translateY(80px); opacity: 0; transition: all 0.3s cubic-bezier(0.4,0,0.2,1); z-index: 100; }
-    .toast.show { transform: translateY(0); opacity: 1; }
-    .toast.error { background: rgba(239,68,68,0.95); box-shadow: 0 4px 14px rgba(239,68,68,0.3); }
-  </style>
+  <script src="https://cdn.tiny.cloud/1/no-api-key/tinymce/7/tinymce.min.js" referrerpolicy="origin"></script>
+  <link rel="stylesheet" href="/styles.css">
 </head>
 <body>
 
@@ -168,12 +22,13 @@
       <button class="header-nav-btn" data-page="chickencorn" onclick="switchPage('chickencorn')">🐔🌽 Chicken Corn</button>
     </nav>
     <div class="header-info">
+      <span class="header-badge postmark-badge" id="postmark-status" onclick="syncAllTemplates()" title="Clique para sincronizar todos">☁️ Postmark</span>
       <span class="header-badge" id="template-count">📋 0 templates</span>
       <span class="save-status" id="save-status"></span>
     </div>
   </header>
 
-  <!-- ─── Sidebar (shared for editor) ─── -->
+  <!-- ─── Sidebar ─── -->
   <aside class="sidebar" id="sidebar"></aside>
 
   <!-- ─── Page: Editor ─── -->
@@ -184,17 +39,28 @@
       <button class="toolbar-tab" data-view="preview-only" onclick="setView('preview-only')">👁️ Preview</button>
       <div class="toolbar-sep"></div>
       <button class="toolbar-tab" onclick="refreshPreview()">🔄 Refresh</button>
-      <button class="toolbar-btn save" id="btn-save" onclick="saveTemplate()">💾 Salvar <kbd style="font-size:10px;opacity:0.7;margin-left:4px;">⌘S</kbd></button>
+      <div class="toolbar-right">
+        <button class="toolbar-btn icons" onclick="toggleIcons()">🎮 Ícones</button>
+        <button class="toolbar-btn sync" onclick="syncCurrentTemplate()">☁️ Sync Postmark</button>
+        <button class="toolbar-btn save" id="btn-save" onclick="saveTemplate()">💾 Salvar <kbd style="font-size:10px;opacity:0.7;margin-left:4px;">⌘S</kbd></button>
+      </div>
     </div>
     <div class="content split" id="content">
       <div class="empty-state" id="empty-state" style="grid-column:1/-1;">
         <div class="icon">📧</div>
         <p>Selecione um template na barra lateral</p>
-        <p style="font-size:12px;color:#3F3F46;">⌘S para salvar · Edição em tempo real</p>
+        <p style="font-size:12px;color:#3F3F46;">⌘S para salvar · Edição em tempo real · WYSIWYG + Código</p>
       </div>
       <div class="editor-panel" id="editor-panel" style="display:none;">
-        <div class="panel-header"><span class="dot"></span><span id="editor-filename">editor</span></div>
+        <div class="panel-header">
+          <span class="dot"></span><span id="editor-filename">editor</span>
+          <div class="mode-toggle">
+            <button class="active" data-mode="code" onclick="setEditorMode('code')">⌨️ Código</button>
+            <button data-mode="wysiwyg" onclick="setEditorMode('wysiwyg')">🖊️ Visual</button>
+          </div>
+        </div>
         <textarea id="code-editor" spellcheck="false"></textarea>
+        <div id="wysiwyg-wrap" style="display:none;"></div>
       </div>
       <div class="preview-panel" id="preview-panel" style="display:none;">
         <div class="panel-header">
@@ -215,16 +81,16 @@
     <div class="design-panel" id="design-panel">
       <div class="design-section">
         <div class="design-section-title"><span>🎨</span> Cores</div>
-        <div class="design-field"><label>Primary (Orange)</label><div class="color-row"><div class="color-swatch" id="sw-primary" onclick="pickColor('primary')"></div><input type="text" id="clr-primary" onchange="updateDesign()"><input type="color" id="cp-primary" onchange="colorPicked('primary')"></div></div>
-        <div class="design-field"><label>Secondary (Indigo)</label><div class="color-row"><div class="color-swatch" id="sw-secondary" onclick="pickColor('secondary')"></div><input type="text" id="clr-secondary" onchange="updateDesign()"><input type="color" id="cp-secondary" onchange="colorPicked('secondary')"></div></div>
-        <div class="design-field"><label>Gradient Início</label><div class="color-row"><div class="color-swatch" id="sw-gradientStart" onclick="pickColor('gradientStart')"></div><input type="text" id="clr-gradientStart" onchange="updateDesign()"><input type="color" id="cp-gradientStart" onchange="colorPicked('gradientStart')"></div></div>
-        <div class="design-field"><label>Gradient Fim</label><div class="color-row"><div class="color-swatch" id="sw-gradientEnd" onclick="pickColor('gradientEnd')"></div><input type="text" id="clr-gradientEnd" onchange="updateDesign()"><input type="color" id="cp-gradientEnd" onchange="colorPicked('gradientEnd')"></div></div>
-        <div class="design-field"><label>Background</label><div class="color-row"><div class="color-swatch" id="sw-background" onclick="pickColor('background')"></div><input type="text" id="clr-background" onchange="updateDesign()"><input type="color" id="cp-background" onchange="colorPicked('background')"></div></div>
-        <div class="design-field"><label>Background Alt</label><div class="color-row"><div class="color-swatch" id="sw-backgroundAlt" onclick="pickColor('backgroundAlt')"></div><input type="text" id="clr-backgroundAlt" onchange="updateDesign()"><input type="color" id="cp-backgroundAlt" onchange="colorPicked('backgroundAlt')"></div></div>
-        <div class="design-field"><label>Texto Principal</label><div class="color-row"><div class="color-swatch" id="sw-textPrimary" onclick="pickColor('textPrimary')"></div><input type="text" id="clr-textPrimary" onchange="updateDesign()"><input type="color" id="cp-textPrimary" onchange="colorPicked('textPrimary')"></div></div>
-        <div class="design-field"><label>Texto Muted</label><div class="color-row"><div class="color-swatch" id="sw-textMuted" onclick="pickColor('textMuted')"></div><input type="text" id="clr-textMuted" onchange="updateDesign()"><input type="color" id="cp-textMuted" onchange="colorPicked('textMuted')"></div></div>
-        <div class="design-field"><label>Success</label><div class="color-row"><div class="color-swatch" id="sw-success" onclick="pickColor('success')"></div><input type="text" id="clr-success" onchange="updateDesign()"><input type="color" id="cp-success" onchange="colorPicked('success')"></div></div>
-        <div class="design-field"><label>Danger</label><div class="color-row"><div class="color-swatch" id="sw-danger" onclick="pickColor('danger')"></div><input type="text" id="clr-danger" onchange="updateDesign()"><input type="color" id="cp-danger" onchange="colorPicked('danger')"></div></div>
+        <div class="design-field"><label>Primary (Orange)</label><div class="color-row"><div class="color-swatch" id="sw-primary" onclick="pickColor('primary')"></div><input type="text" id="clr-primary" oninput="updateDesign()"><input type="color" id="cp-primary" onchange="colorPicked('primary')"></div></div>
+        <div class="design-field"><label>Secondary (Indigo)</label><div class="color-row"><div class="color-swatch" id="sw-secondary" onclick="pickColor('secondary')"></div><input type="text" id="clr-secondary" oninput="updateDesign()"><input type="color" id="cp-secondary" onchange="colorPicked('secondary')"></div></div>
+        <div class="design-field"><label>Gradient Início</label><div class="color-row"><div class="color-swatch" id="sw-gradientStart" onclick="pickColor('gradientStart')"></div><input type="text" id="clr-gradientStart" oninput="updateDesign()"><input type="color" id="cp-gradientStart" onchange="colorPicked('gradientStart')"></div></div>
+        <div class="design-field"><label>Gradient Fim</label><div class="color-row"><div class="color-swatch" id="sw-gradientEnd" onclick="pickColor('gradientEnd')"></div><input type="text" id="clr-gradientEnd" oninput="updateDesign()"><input type="color" id="cp-gradientEnd" onchange="colorPicked('gradientEnd')"></div></div>
+        <div class="design-field"><label>Background</label><div class="color-row"><div class="color-swatch" id="sw-background" onclick="pickColor('background')"></div><input type="text" id="clr-background" oninput="updateDesign()"><input type="color" id="cp-background" onchange="colorPicked('background')"></div></div>
+        <div class="design-field"><label>Background Alt</label><div class="color-row"><div class="color-swatch" id="sw-backgroundAlt" onclick="pickColor('backgroundAlt')"></div><input type="text" id="clr-backgroundAlt" oninput="updateDesign()"><input type="color" id="cp-backgroundAlt" onchange="colorPicked('backgroundAlt')"></div></div>
+        <div class="design-field"><label>Texto Principal</label><div class="color-row"><div class="color-swatch" id="sw-textPrimary" onclick="pickColor('textPrimary')"></div><input type="text" id="clr-textPrimary" oninput="updateDesign()"><input type="color" id="cp-textPrimary" onchange="colorPicked('textPrimary')"></div></div>
+        <div class="design-field"><label>Texto Muted</label><div class="color-row"><div class="color-swatch" id="sw-textMuted" onclick="pickColor('textMuted')"></div><input type="text" id="clr-textMuted" oninput="updateDesign()"><input type="color" id="cp-textMuted" onchange="colorPicked('textMuted')"></div></div>
+        <div class="design-field"><label>Success</label><div class="color-row"><div class="color-swatch" id="sw-success" onclick="pickColor('success')"></div><input type="text" id="clr-success" oninput="updateDesign()"><input type="color" id="cp-success" onchange="colorPicked('success')"></div></div>
+        <div class="design-field"><label>Danger</label><div class="color-row"><div class="color-swatch" id="sw-danger" onclick="pickColor('danger')"></div><input type="text" id="clr-danger" oninput="updateDesign()"><input type="color" id="cp-danger" onchange="colorPicked('danger')"></div></div>
       </div>
 
       <div class="design-section">
@@ -245,25 +111,24 @@
 
       <div class="design-section">
         <div class="design-section-title"><span>🖼️</span> Imagens</div>
-        <div class="design-field"><label>Logo URL</label><input type="text" id="img-logo" onchange="updateDesign()"></div>
-        <div class="design-field"><label>Logo Largura (px)</label><input type="number" id="img-logoWidth" value="180" onchange="updateDesign()"></div>
-        <div class="design-field"><label>Logo Altura (px)</label><input type="number" id="img-logoHeight" value="40" onchange="updateDesign()"></div>
+        <div class="design-field"><label>Logo URL</label><input type="text" id="img-logo" oninput="updateDesign()"></div>
+        <div class="design-field"><label>Logo Largura (px)</label><input type="number" id="img-logoWidth" value="180" oninput="updateDesign()"></div>
+        <div class="design-field"><label>Logo Altura (px)</label><input type="number" id="img-logoHeight" value="40" oninput="updateDesign()"></div>
       </div>
 
       <div class="design-section">
         <div class="design-section-title"><span>📐</span> Border Radius</div>
-        <div class="design-field"><label>Cards (px)</label><input type="number" id="br-cards" value="12" onchange="updateDesign()"></div>
-        <div class="design-field"><label>Botões (px)</label><input type="number" id="br-buttons" value="12" onchange="updateDesign()"></div>
-        <div class="design-field"><label>Badges (px)</label><input type="number" id="br-badges" value="9999" onchange="updateDesign()"></div>
+        <div class="design-field"><label>Cards (px)</label><input type="number" id="br-cards" value="12" oninput="updateDesign()"></div>
+        <div class="design-field"><label>Botões (px)</label><input type="number" id="br-buttons" value="12" oninput="updateDesign()"></div>
+        <div class="design-field"><label>Badges (px)</label><input type="number" id="br-badges" value="9999" oninput="updateDesign()"></div>
       </div>
 
       <button class="design-save-btn" onclick="saveDesign()">💾 Salvar Design System</button>
+      <button class="design-sync-btn" onclick="syncAllTemplates()">☁️ Sync All → Postmark</button>
     </div>
 
     <div class="design-preview-area">
-      <div class="design-preview-card" id="design-preview-card">
-        <!-- Populated by JS -->
-      </div>
+      <div class="design-preview-card" id="design-preview-card"></div>
     </div>
   </div>
 
@@ -297,315 +162,27 @@
 
 </div>
 
+<!-- ─── Icons Panel (slide-in) ─── -->
+<div class="icons-panel" id="icons-panel">
+  <div class="icons-panel-header">
+    <h3>🎮 Ícones de Gamificação</h3>
+    <button class="icons-close" onclick="toggleIcons()">✕</button>
+  </div>
+  <input class="icons-search" placeholder="🔍 Buscar ícone..." oninput="filterIcons(this.value)">
+  <div id="icons-grid-container"></div>
+</div>
+
+<!-- ─── Sync Modal ─── -->
+<div class="modal-overlay" id="sync-modal" onclick="if(event.target===this)closeSyncModal()">
+  <div class="modal">
+    <h3>☁️ Resultado da Sincronização</h3>
+    <div id="sync-results"></div>
+    <button class="modal-close" onclick="closeSyncModal()">Fechar</button>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
-<script>
-// ═══════════════════════════════════════════════════════════
-// State
-// ═══════════════════════════════════════════════════════════
-let templates = [], currentTemplate = null, layoutHtml = '', sampleData = {};
-let isDirty = false, currentView = 'split', currentPage = 'editor';
-let designConfig = {}, chickenCornMd = '';
-
-// ═══════════════════════════════════════════════════════════
-// Boot
-// ═══════════════════════════════════════════════════════════
-async function init() {
-  const [tpl, layout, data, design, docs] = await Promise.all([
-    fetch('/api/templates').then(r => r.json()),
-    fetch('/api/layout').then(r => r.json()),
-    fetch('/api/sample-data').then(r => r.json()),
-    fetch('/api/design').then(r => r.json()),
-    fetch('/api/chicken-corn').then(r => r.json())
-  ]);
-  templates = tpl; layoutHtml = layout.content; sampleData = data;
-  designConfig = design; chickenCornMd = docs.content;
-  document.getElementById('template-count').textContent = '📋 ' + templates.length + ' templates';
-  renderSidebar();
-  loadDesignUI();
-  renderDocs();
-}
-
-// ═══════════════════════════════════════════════════════════
-// Page Navigation
-// ═══════════════════════════════════════════════════════════
-function switchPage(page) {
-  currentPage = page;
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.getElementById('page-' + page).classList.add('active');
-  document.querySelectorAll('.header-nav-btn').forEach(b => b.classList.toggle('active', b.dataset.page === page));
-  // Show/hide sidebar
-  document.getElementById('sidebar').style.display = page === 'editor' ? '' : 'none';
-  // Adjust grid
-  var app = document.querySelector('.app');
-  app.style.gridTemplateColumns = page === 'editor' ? '280px 1fr' : '1fr';
-  if (page === 'design') updateDesignPreview();
-}
-
-// ═══════════════════════════════════════════════════════════
-// Sidebar
-// ═══════════════════════════════════════════════════════════
-function renderSidebar() {
-  var sidebar = document.getElementById('sidebar');
-  var groups = { layout: { title: '🎨 Layout', items: [] }, general: { title: '📧 Gerais', items: [] }, member: { title: '👤 Membro', items: [] }, manager: { title: '👔 Gestor', items: [] } };
-  var icons = { 'base_layout': '🎨', 'welcome': '🎉', 'password_reset': '🔐', 'order_confirmation': '✅', 'order_status_update': '📋', 'invoice': '📄', 'onboarding_invite': '🎁', 'points_added': '⭐', 'points_spent': '💸', 'order_status': '📦', 'campaign_invite': '🎉', 'user_created': '👤', 'campaign_sent': '📤', 'campaign_started': '🚀', 'campaign_ended': '🏁', 'gift_created': '🎁', 'gift_status': '📋', 'crud_update': '🔔', 'low_stock': '⚠️' };
-  templates.forEach(function(t) { if (groups[t.category]) groups[t.category].items.push(t); });
-  var html = '';
-  for (var key in groups) {
-    var group = groups[key]; if (group.items.length === 0) continue;
-    html += '<div class="sidebar-group"><div class="sidebar-group-title">' + group.title + '</div>';
-    group.items.forEach(function(t) {
-      var icon = icons[t.name] || '📄';
-      var badge = key !== 'general' ? '<span class="cat-badge ' + key + '">' + key + '</span>' : '';
-      var label = t.name.replace(/_/g, ' ').replace(/\b\w/g, function(c) { return c.toUpperCase(); });
-      html += '<div class="sidebar-item" data-id="' + t.id + '" onclick="selectTemplate(\'' + t.id + '\')"><span class="icon">' + icon + '</span><span class="label">' + label + '</span>' + badge + '</div>';
-    });
-    html += '</div>';
-  }
-  sidebar.innerHTML = html;
-}
-
-// ═══════════════════════════════════════════════════════════
-// Template Editor
-// ═══════════════════════════════════════════════════════════
-async function selectTemplate(id) {
-  if (isDirty && currentTemplate && !confirm('Alterações não salvas. Continuar?')) return;
-  document.querySelectorAll('.sidebar-item').forEach(function(el) { el.classList.remove('active'); });
-  var sel = document.querySelector('.sidebar-item[data-id="' + id + '"]');
-  if (sel) sel.classList.add('active');
-  var res = await fetch('/api/template?path=' + encodeURIComponent(id));
-  var data = await res.json();
-  currentTemplate = templates.find(function(t) { return t.id === id; });
-  document.getElementById('empty-state').style.display = 'none';
-  document.getElementById('editor-panel').style.display = 'flex';
-  document.getElementById('preview-panel').style.display = 'flex';
-  applyView();
-  var editor = document.getElementById('code-editor');
-  editor.value = data.content;
-  document.getElementById('editor-filename').textContent = id;
-  isDirty = false; updateSaveStatus('');
-  refreshPreview();
-}
-
-function refreshPreview() {
-  if (!currentTemplate) return;
-  var html = document.getElementById('code-editor').value;
-  if (currentTemplate.category !== 'layout') html = layoutHtml.replace('{{{ @content }}}', html);
-  html = substituteVars(html, sampleData);
-  var iframe = document.getElementById('preview-frame');
-  iframe.srcdoc = html;
-  iframe.onload = function() { try { var b = iframe.contentDocument.body; if (b) iframe.style.height = Math.max(400, b.scrollHeight + 40) + 'px'; } catch(e){} };
-}
-
-async function saveTemplate() {
-  if (!currentTemplate) return;
-  updateSaveStatus('saving');
-  try {
-    var editor = document.getElementById('code-editor');
-    var res = await fetch('/api/template?path=' + encodeURIComponent(currentTemplate.id), {
-      method: 'PUT', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ content: editor.value })
-    });
-    if (!res.ok) throw new Error('Save failed');
-    isDirty = false; updateSaveStatus('saved');
-    showToast('✅ Template salvo!');
-    refreshPreview();
-  } catch(err) { updateSaveStatus(''); showToast('❌ Erro: ' + err.message, true); }
-}
-
-function setView(view) {
-  currentView = view;
-  document.querySelectorAll('.toolbar-tab').forEach(function(t) { t.classList.toggle('active', t.dataset.view === view); });
-  applyView();
-}
-function applyView() {
-  var content = document.getElementById('content');
-  content.className = 'content ' + currentView;
-  if (currentTemplate) {
-    document.getElementById('editor-panel').style.display = currentView === 'preview-only' ? 'none' : 'flex';
-    document.getElementById('preview-panel').style.display = currentView === 'editor-only' ? 'none' : 'flex';
-  }
-}
-function setDevice(device) {
-  document.getElementById('preview-frame').className = device !== 'desktop' ? device : '';
-  document.querySelectorAll('.device-btn').forEach(function(b) { b.classList.remove('active'); });
-  event.target.classList.add('active');
-}
-
-// ═══════════════════════════════════════════════════════════
-// Design System
-// ═══════════════════════════════════════════════════════════
-function loadDesignUI() {
-  var colors = designConfig.colors || {};
-  for (var key in colors) {
-    var input = document.getElementById('clr-' + key);
-    var swatch = document.getElementById('sw-' + key);
-    if (input) { input.value = colors[key]; }
-    if (swatch) { swatch.style.background = colors[key]; }
-  }
-  var fonts = designConfig.fonts || {};
-  if (fonts.heading) document.getElementById('font-heading').value = fonts.heading;
-  if (fonts.body) document.getElementById('font-body').value = fonts.body;
-  var images = designConfig.images || {};
-  if (images.logo) document.getElementById('img-logo').value = images.logo;
-  if (images.logoWidth) document.getElementById('img-logoWidth').value = images.logoWidth;
-  if (images.logoHeight) document.getElementById('img-logoHeight').value = images.logoHeight;
-  var br = designConfig.borderRadius || {};
-  if (br.cards) document.getElementById('br-cards').value = br.cards;
-  if (br.buttons) document.getElementById('br-buttons').value = br.buttons;
-  if (br.badges) document.getElementById('br-badges').value = br.badges;
-}
-
-function pickColor(key) { document.getElementById('cp-' + key).click(); }
-function colorPicked(key) {
-  var val = document.getElementById('cp-' + key).value;
-  document.getElementById('clr-' + key).value = val;
-  document.getElementById('sw-' + key).style.background = val;
-  updateDesign();
-}
-function updateDesign() {
-  var colorKeys = ['primary','secondary','gradientStart','gradientEnd','background','backgroundAlt','textPrimary','textMuted','success','danger'];
-  var colors = {};
-  colorKeys.forEach(function(k) {
-    var el = document.getElementById('clr-' + k);
-    if (el) { colors[k] = el.value; var sw = document.getElementById('sw-' + k); if (sw) sw.style.background = el.value; }
-  });
-  designConfig = {
-    colors: colors,
-    fonts: { heading: document.getElementById('font-heading').value, body: document.getElementById('font-body').value },
-    images: { logo: document.getElementById('img-logo').value, logoWidth: document.getElementById('img-logoWidth').value, logoHeight: document.getElementById('img-logoHeight').value },
-    borderRadius: { cards: document.getElementById('br-cards').value, buttons: document.getElementById('br-buttons').value, badges: document.getElementById('br-badges').value }
-  };
-  updateDesignPreview();
-}
-
-function updateDesignPreview() {
-  var c = designConfig.colors || {};
-  var f = designConfig.fonts || {};
-  var img = designConfig.images || {};
-  var br = designConfig.borderRadius || {};
-  var card = document.getElementById('design-preview-card');
-  card.innerHTML = '<div style="background:linear-gradient(135deg,' + (c.gradientStart||'#6366F1') + ',' + (c.gradientEnd||'#F29F40') + ');padding:28px;text-align:center;">'
-    + (img.logo ? '<img src="' + img.logo + '" width="' + (img.logoWidth||180) + '" height="' + (img.logoHeight||40) + '" style="margin-bottom:8px;">' : '')
-    + '<p style="font-family:\'' + (f.heading||'Poppins') + '\',sans-serif;color:#FFF;font-weight:700;font-size:16px;margin:0;">Preview do Design</p></div>'
-    + '<div style="padding:28px;font-family:\'' + (f.body||'Poppins') + '\',sans-serif;">'
-    + '<h2 style="color:' + (c.textPrimary||'#11181C') + ';font-size:20px;margin:0 0 8px;">⭐ Pontos Adicionados!</h2>'
-    + '<p style="color:' + (c.textMuted||'#71717A') + ';font-size:14px;margin:0 0 20px;">Olá, <strong style="color:' + (c.textPrimary||'#11181C') + '">Maria Silva</strong>! Você recebeu pontos.</p>'
-    + '<div style="display:flex;gap:12px;margin:20px 0;">'
-    + '<div style="flex:1;background:' + (c.backgroundAlt||'#F9FAFB') + ';border-radius:' + (br.cards||12) + 'px;padding:16px;text-align:center;">'
-    + '<p style="font-size:24px;font-weight:700;color:' + (c.success||'#22C55E') + ';margin:0;">+500</p><p style="font-size:11px;color:' + (c.textMuted||'#71717A') + ';margin:4px 0 0;">Adicionados</p></div>'
-    + '<div style="flex:1;background:' + (c.backgroundAlt||'#F9FAFB') + ';border-radius:' + (br.cards||12) + 'px;padding:16px;text-align:center;">'
-    + '<p style="font-size:24px;font-weight:700;color:' + (c.secondary||'#4F46E5') + ';margin:0;">3.750</p><p style="font-size:11px;color:' + (c.textMuted||'#71717A') + ';margin:4px 0 0;">Saldo Total</p></div>'
-    + '<div style="flex:1;background:' + (c.backgroundAlt||'#F9FAFB') + ';border-radius:' + (br.cards||12) + 'px;padding:16px;text-align:center;">'
-    + '<p style="font-size:24px;font-weight:700;color:' + (c.primary||'#F29F40') + ';margin:0;">200</p><p style="font-size:11px;color:' + (c.textMuted||'#71717A') + ';margin:4px 0 0;">Expiram</p></div></div>'
-    + '<div style="text-align:center;margin:24px 0;"><a href="#" style="display:inline-block;padding:12px 32px;background:linear-gradient(135deg,' + (c.secondary||'#4F46E5') + ',' + (c.gradientStart||'#6366F1') + ');color:#FFF;text-decoration:none;border-radius:' + (br.buttons||12) + 'px;font-weight:600;font-size:14px;box-shadow:0 4px 14px rgba(79,70,229,0.3);">🛍️ Usar Meus Pontos</a></div>'
-    + '<div style="background:' + (c.backgroundAlt||'#F9FAFB') + ';border-left:4px solid ' + (c.secondary||'#4F46E5') + ';padding:14px 18px;border-radius:0 ' + (br.cards||12) + 'px ' + (br.cards||12) + 'px 0;">'
-    + '<p style="font-size:13px;color:' + (c.textMuted||'#71717A') + ';margin:0;">📋 Motivo: <strong style="color:' + (c.textPrimary||'#11181C') + '">Campanha Dia das Mulheres</strong></p></div>'
-    + '<hr style="border:none;border-top:1px solid #F1F5F9;margin:20px 0;">'
-    + '<p style="text-align:center;font-size:12px;color:' + (c.textMuted||'#71717A') + ';">TechCorp Brasil · suporte@techcorp.com.br</p></div>';
-}
-
-async function saveDesign() {
-  try {
-    var res = await fetch('/api/design', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(designConfig) });
-    if (!res.ok) throw new Error('Save failed');
-    showToast('✅ Design System salvo!');
-  } catch(err) { showToast('❌ Erro: ' + err.message, true); }
-}
-
-// ═══════════════════════════════════════════════════════════
-// Chicken Corn (Documentation)
-// ═══════════════════════════════════════════════════════════
-function renderDocs() {
-  var mdEl = document.getElementById('md-content');
-  if (typeof marked !== 'undefined') {
-    mdEl.innerHTML = marked.parse(chickenCornMd);
-  } else {
-    mdEl.innerHTML = '<pre style="white-space:pre-wrap;color:#A1A1AA;">' + chickenCornMd + '</pre>';
-  }
-}
-
-function scrollDocTo(heading) {
-  var docContent = document.getElementById('doc-content');
-  var slug = heading.toLowerCase().replace(/[^a-zà-ú0-9]+/g, '-').replace(/(^-|-$)/g, '');
-  var headings = docContent.querySelectorAll('h1, h2, h3');
-  for (var i = 0; i < headings.length; i++) {
-    var hSlug = headings[i].textContent.toLowerCase().replace(/[^a-zà-ú0-9]+/g, '-').replace(/(^-|-$)/g, '');
-    if (hSlug.indexOf(slug) !== -1) {
-      headings[i].scrollIntoView({ behavior: 'smooth', block: 'start' });
-      break;
-    }
-  }
-  document.querySelectorAll('.doc-nav-item').forEach(function(el) { el.classList.remove('active'); });
-  event.target.classList.add('active');
-  return false;
-}
-
-function downloadDoc() {
-  var blob = new Blob([chickenCornMd], { type: 'text/markdown' });
-  var a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = 'chicken-corn-integration-guide.md';
-  a.click();
-  showToast('📥 Download iniciado!');
-}
-
-function copyPrompt() {
-  var promptStart = chickenCornMd.indexOf('```\nEstou integrando templates');
-  var promptEnd = chickenCornMd.indexOf('```\n\n---', promptStart);
-  if (promptStart === -1) { copyAllDoc(); return; }
-  var prompt = chickenCornMd.substring(promptStart + 4, promptEnd);
-  navigator.clipboard.writeText(prompt).then(function() { showToast('📋 Prompt copiado para clipboard!'); });
-}
-
-function copyAllDoc() {
-  navigator.clipboard.writeText(chickenCornMd).then(function() { showToast('📄 Documentação completa copiada!'); });
-}
-
-// ═══════════════════════════════════════════════════════════
-// Variable Substitution
-// ═══════════════════════════════════════════════════════════
-function substituteVars(html, data, depth) {
-  depth = depth || 0;
-  if (depth > 5) return html;
-  html = html.replace(/\{\{#each\s+(\w+)\}\}([\s\S]*?)\{\{\/each\}\}/g, function(m, k, inner) {
-    var arr = data[k]; if (!Array.isArray(arr)) return '';
-    return arr.map(function(item) { return substituteVars(inner, Object.assign({}, data, item), depth+1); }).join('');
-  });
-  html = html.replace(/\{\{#(\w+(?:\.\w+)*)\}\}([\s\S]*?)\{\{\/\1\}\}/g, function(m, k, inner) {
-    return getVal(data, k) ? substituteVars(inner, data, depth+1) : '';
-  });
-  html = html.replace(/\{\{\^(\w+(?:\.\w+)*)\}\}([\s\S]*?)\{\{\/\1\}\}/g, function(m, k, inner) {
-    return !getVal(data, k) ? substituteVars(inner, data, depth+1) : '';
-  });
-  html = html.replace(/\{\{\{\s*(\w+(?:\.\w+)*)\s*\}\}\}/g, function(m, k) { var v = getVal(data, k); return v !== undefined ? String(v) : m; });
-  html = html.replace(/\{\{\s*(\w+(?:\.\w+)*)\s*\}\}/g, function(m, k) { var v = getVal(data, k); return v !== undefined ? String(v) : m; });
-  return html;
-}
-function getVal(obj, path) { return path.split('.').reduce(function(o, k) { return o && o[k] !== undefined ? o[k] : undefined; }, obj); }
-
-// ═══════════════════════════════════════════════════════════
-// Utils
-// ═══════════════════════════════════════════════════════════
-function updateSaveStatus(s) {
-  var el = document.getElementById('save-status'); el.className = 'save-status ' + s;
-  if (s === 'saving') el.textContent = '⏳ Salvando...'; else if (s === 'saved') el.textContent = '✅ Salvo'; else el.textContent = '';
-}
-function showToast(msg, err) {
-  var t = document.getElementById('toast'); t.textContent = msg; t.className = 'toast show' + (err ? ' error' : '');
-  setTimeout(function() { t.className = 'toast'; }, 2500);
-}
-
-// Keyboard
-document.addEventListener('keydown', function(e) { if ((e.metaKey || e.ctrlKey) && e.key === 's') { e.preventDefault(); if (currentPage === 'design') saveDesign(); else saveTemplate(); } });
-document.getElementById('code-editor').addEventListener('input', function() {
-  isDirty = true; updateSaveStatus(''); clearTimeout(window._pt); window._pt = setTimeout(refreshPreview, 500);
-});
-document.getElementById('code-editor').addEventListener('keydown', function(e) {
-  if (e.key === 'Tab') { e.preventDefault(); var s = e.target.selectionStart, en = e.target.selectionEnd; e.target.value = e.target.value.substring(0,s) + '  ' + e.target.value.substring(en); e.target.selectionStart = e.target.selectionEnd = s + 2; }
-});
-
-init();
-</script>
+<script src="/app.js"></script>
 </body>
 </html>
