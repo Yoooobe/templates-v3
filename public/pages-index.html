@@ -720,8 +720,14 @@
         var token = getPostmarkToken();
         if (!token)
           throw new Error("Configure o Postmark token primeiro (⚙️ Config)");
-        var url = "https://api.postmarkapp.com" + endpoint;
-        console.log("Postmark →", method, url);
+        // Postmark API doesn't return Access-Control-Allow-Origin for non-localhost origins
+        // Use CORS proxy when running on GitHub Pages
+        var isLocal = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
+        var baseUrl = isLocal
+          ? "https://api.postmarkapp.com"
+          : "https://corsproxy.io/?" + encodeURIComponent("https://api.postmarkapp.com" + endpoint);
+        var url = isLocal ? baseUrl + endpoint : baseUrl;
+        console.log("Postmark →", method, url, isLocal ? "(direct)" : "(CORS proxy)");
         var opts = {
           method,
           headers: {
