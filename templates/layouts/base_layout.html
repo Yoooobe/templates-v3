@@ -4,18 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <title>{{ tenant.name }} – Yoobe</title>
-  <!--[if mso]>
-  <noscript>
-    <xml>
-      <o:OfficeDocumentSettings>
-        <o:PixelsPerInch>96</o:PixelsPerInch>
-      </o:OfficeDocumentSettings>
-    </xml>
-  </noscript>
-  <![endif]-->
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
     /* ─── Reset ─────────────────────────────────────────────── */
     body, table, td, a { -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
     table, td { mso-table-lspace: 0pt; mso-table-rspace: 0pt; }
@@ -306,8 +296,8 @@
                 <tr>
                   <td align="center">
                     {{#tenant.logo_url}}
-                    <a href="{{ tenant.website_url }}" target="_blank" style="text-decoration: none;">
-                      <img src="{{{ tenant.logo_url }}}" alt="{{ tenant.name }}" class="logo" style="max-height: 40px; max-width: 180px;">
+                    <a href="{{tenant.website_url}}" target="_blank" style="text-decoration: none;">
+                      <img src="{{{tenant.logo_url}}}" alt="{{tenant.name}}" class="logo" style="max-height: 40px; max-width: 180px;">
                     </a>
                     {{/tenant.logo_url}}
                     {{^tenant.logo_url}}
@@ -318,7 +308,7 @@
                 {{#tenant.name}}
                 <tr>
                   <td align="center" style="padding-top: 12px;">
-                    <span style="color: #FFFFFF; font-family: 'Poppins', sans-serif; font-size: 14px; font-weight: 500; opacity: 0.9;">{{ tenant.name }}</span>
+                    <span style="color: #FFFFFF; font-family: 'Poppins', sans-serif; font-size: 14px; font-weight: 500; opacity: 0.9;">{{tenant.name}}</span>
                   </td>
                 </tr>
                 {{/tenant.name}}
@@ -329,7 +319,7 @@
           <!-- ─── Body Content ─── -->
           <tr>
             <td class="email-body" style="padding: 40px; font-family: 'Poppins', sans-serif;">
-              {{{ @content }}}
+              {{{@content}}}
             </td>
           </tr>
 
@@ -339,7 +329,7 @@
             <td style="padding: 0 40px 24px 40px;">
               <div style="background: linear-gradient(135deg, #EEF2FF 0%, #FEF3C7 100%); border-radius: 12px; padding: 20px 24px;">
                 <p style="font-weight: 600; margin: 0 0 8px 0; font-size: 14px; color: #4F46E5; font-family: 'Poppins', sans-serif;">💬 Mensagem:</p>
-                <p style="margin: 0; font-size: 14px; color: #3F3F46; font-family: 'Poppins', sans-serif;">{{ custom_message }}</p>
+                <p style="margin: 0; font-size: 14px; color: #3F3F46; font-family: 'Poppins', sans-serif;">{{custom_message}}</p>
               </div>
             </td>
           </tr>
@@ -351,23 +341,23 @@
               <table role="presentation" cellpadding="0" cellspacing="0" width="100%">
                 <tr>
                   <td align="center">
-                    <p style="font-family: 'Poppins', sans-serif; font-weight: 600; font-size: 14px; color: #11181C; margin: 0 0 8px 0;">{{ tenant.name }}</p>
+                    <p style="font-family: 'Poppins', sans-serif; font-weight: 600; font-size: 14px; color: #11181C; margin: 0 0 8px 0;">{{tenant.name}}</p>
                     {{#tenant.support_email}}
                     <p style="font-family: 'Poppins', sans-serif; font-size: 13px; color: #71717A; margin: 4px 0;">
-                      📧 <a href="mailto:{{ tenant.support_email }}" style="color: #4F46E5; text-decoration: none;">{{ tenant.support_email }}</a>
+                      📧 <a href="mailto:{{tenant.support_email}}" style="color: #4F46E5; text-decoration: none;">{{tenant.support_email}}</a>
                     </p>
                     {{/tenant.support_email}}
                     {{#tenant.phone}}
-                    <p style="font-family: 'Poppins', sans-serif; font-size: 13px; color: #71717A; margin: 4px 0;">📞 {{ tenant.phone }}</p>
+                    <p style="font-family: 'Poppins', sans-serif; font-size: 13px; color: #71717A; margin: 4px 0;">📞 {{tenant.phone}}</p>
                     {{/tenant.phone}}
                     {{#tenant.website_url}}
                     <p style="font-family: 'Poppins', sans-serif; font-size: 13px; color: #71717A; margin: 4px 0;">
-                      🌐 <a href="{{ tenant.website_url }}" target="_blank" style="color: #4F46E5; text-decoration: none;">{{ tenant.website_url }}</a>
+                      🌐 <a href="{{tenant.website_url}}" target="_blank" style="color: #4F46E5; text-decoration: none;">{{tenant.website_url}}</a>
                     </p>
                     {{/tenant.website_url}}
                     <hr style="border: none; border-top: 1px solid #E5E7EB; margin: 16px 0;">
                     <p style="font-family: 'Poppins', sans-serif; font-size: 11px; color: #A1A1AA; margin: 0;">
-                      Enviado via <a href="{{ platform_url }}" target="_blank" style="color: #4F46E5; text-decoration: none; font-weight: 500;">Yoobe</a> · © {{ current_year }} {{ tenant.name }}
+                      Enviado via <a href="{{platform_url}}" target="_blank" style="color: #4F46E5; text-decoration: none; font-weight: 500;">Yoobe</a> · © {{current_year}} {{tenant.name}}
                     </p>
                   </td>
                 </tr>
