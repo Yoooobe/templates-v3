@@ -38,10 +38,13 @@
       <button class="toolbar-tab" data-view="editor-only" onclick="setView('editor-only')">✏️ Editor</button>
       <button class="toolbar-tab" data-view="preview-only" onclick="setView('preview-only')">👁️ Preview</button>
       <div class="toolbar-sep"></div>
-      <button class="toolbar-tab" onclick="refreshPreview()">🔄 Refresh</button>
+      <div id="template-pm-status" class="toolbar-pm-status"></div>
       <div class="toolbar-right">
+        <button class="toolbar-btn copy-btn" onclick="copyRawHtml()" title="Copiar HTML bruto">📋 HTML</button>
+        <button class="toolbar-btn copy-btn" onclick="copyFinalHtml()" title="Copiar HTML completo com layout">📋 Final</button>
         <button class="toolbar-btn icons" onclick="toggleIcons()">🎮 Ícones</button>
-        <button class="toolbar-btn sync" onclick="syncCurrentTemplate()">☁️ Sync Postmark</button>
+        <button class="toolbar-btn sync" onclick="syncCurrentTemplate()">☁️ Sync</button>
+        <button class="toolbar-btn save-sync" onclick="saveAndSync()" title="Salvar + Sincronizar Postmark">💾☁️ Salvar & Sync</button>
         <button class="toolbar-btn save" id="btn-save" onclick="saveTemplate()">💾 Salvar <kbd style="font-size:10px;opacity:0.7;margin-left:4px;">⌘S</kbd></button>
       </div>
     </div>
@@ -124,7 +127,7 @@
       </div>
 
       <button class="design-save-btn" onclick="saveDesign()">💾 Salvar Design System</button>
-      <button class="design-sync-btn" onclick="syncAllTemplates()">☁️ Sync All → Postmark</button>
+      <button class="design-sync-btn" onclick="saveDesignAndSync()">☁️ Salvar Design + Sync Postmark</button>
     </div>
 
     <div class="design-preview-area">
@@ -141,6 +144,8 @@
       <a class="doc-nav-item" href="#" onclick="scrollDocTo('configuração-inicial')">🔧 Configuração</a>
       <a class="doc-nav-item" href="#" onclick="scrollDocTo('configuração-de-gatilhos')">🎯 Gatilhos</a>
       <a class="doc-nav-item" href="#" onclick="scrollDocTo('integração-de-logobranding')">🖼️ Logo/Branding</a>
+      <a class="doc-nav-item" href="#" onclick="scrollDocTo('sincronização-com-postmark')">☁️ Postmark Sync</a>
+      <a class="doc-nav-item" href="#" onclick="scrollDocTo('design-system')">🎨 Design System</a>
       <a class="doc-nav-item" href="#" onclick="scrollDocTo('lista-completa')">📦 Templates</a>
       <a class="doc-nav-item" href="#" onclick="scrollDocTo('onde-colocar-os-gatilhos')">🔗 Onde usar</a>
       <a class="doc-nav-item" href="#" onclick="scrollDocTo('prompt-para-copilot')">🤖 Prompt Copilot</a>

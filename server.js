@@ -196,6 +196,87 @@ app.put('/api/design', function(req, res) {
   res.json({ success: true });
 });
 
+// ─── API: Apply design to all templates and sync to Postmark ────────────
+app.post('/api/design/apply-and-sync', async function(req, res) {
+  try {
+    // Save design first
+    if (req.body.design) {
+      fs.writeFileSync(DESIGN_CONFIG_PATH, JSON.stringify(req.body.design, null, 2), 'utf-8');
+    }
+    // Now sync all templates to Postmark (they read files on-demand)
+    var ymlTemplates = parsePostmarkYml();
+    var results = [];
+    var aliases = Object.keys(ymlTemplates);
+    aliases.sort(function(a, b) {
+      var ta = ymlTemplates[a].type || 'Standard'; var tb = ymlTemplates[b].type || 'Standard';
+      return (ta === 'Layout' ? 0 : 1) - (tb === 'Layout' ? 0 : 1);
+    });
+    for (var i = 0; i < aliases.length; i++) {
+      var alias = aliases[i]; var tpl = ymlTemplates[alias];
+      try {
+        var htmlPath = path.join(ROOT, tpl.html_file);
+        if (!fs.existsSync(htmlPath)) { results.push({ alias: alias, error: 'File not found' }); continue; }
+        var htmlContent = fs.readFileSync(htmlPath, 'utf-8');
+        var exists = false;
+        try { await postmarkRequest('GET', '/templates/' + alias); exists = true; } catch(e) {}
+        var body = { Name: tpl.name, Alias: alias, HtmlBody: htmlContent, TemplateType: tpl.type || 'Standard' };
+        if (tpl.subject) body.Subject = tpl.subject;
+        if (tpl.layout) body.LayoutTemplate = tpl.layout;
+        if (exists) await postmarkRequest('PUT', '/templates/' + alias, body);
+        else await postmarkRequest('POST', '/templates', body);
+        results.push({ alias: alias, success: true, action: exists ? 'updated' : 'created' });
+      } catch(err) { results.push({ alias: alias, error: err.message }); }
+    }
+    res.json({ results: results });
+  } catch(err) { res.status(500).json({ error: err.message }); }
+});
+
+// ─── API: Get final rendered HTML (with layout + design tokens) ─────────
+app.get('/api/template/final-html', function(req, res) {
+  var tplPath = req.query.path;
+  if (!tplPath) return res.status(400).json({ error: 'Missing path' });
+  var safePath = path.normalize(tplPath).replace(/^(\.\.(\\|\/|$))+/, '');
+  var filePath = path.join(ROOT, 'templates', safePath);
+  if (!fs.existsSync(filePath)) return res.status(404).json({ error: 'Not found' });
+  var html = fs.readFileSync(filePath, 'utf-8');
+  // Wrap in layout if not layout itself
+  var layoutPath = path.join(ROOT, 'templates', 'layouts', 'base_layout.html');
+  if (!safePath.includes('layouts/') && fs.existsSync(layoutPath)) {
+    var layout = fs.readFileSync(layoutPath, 'utf-8');
+    html = layout.replace('{{{@content}}}', html);
+  }
+  res.json({ html: html });
+});
+
+// ─── API: Get per-template Postmark status ──────────────────────────────
+app.get('/api/postmark/templates', async function(req, res) {
+  try {
+    var data = await postmarkRequest('GET', '/templates?count=100&offset=0&TemplateType=All');
+    var remote = {};
+    (data.Templates || []).forEach(function(t) {
+      remote[t.Alias || t.Name] = {
+        id: t.TemplateId,
+        name: t.Name,
+        alias: t.Alias,
+        active: t.Active,
+        type: t.TemplateType
+      };
+    });
+    // Map local templates to Postmark status
+    var ymlTemplates = parsePostmarkYml();
+    var status = {};
+    for (var alias in ymlTemplates) {
+      status[alias] = {
+        local: true,
+        postmark: !!remote[alias],
+        postmarkId: remote[alias] ? remote[alias].id : null,
+        name: ymlTemplates[alias].name
+      };
+    }
+    res.json({ connected: true, status: status, total: data.TotalCount || 0 });
+  } catch(err) { res.json({ connected: false, error: err.message }); }
+});
+
 // ═══════════════════════════════════════════════════════════
 // Postmark Sync Endpoints
 // ═══════════════════════════════════════════════════════════
@@ -310,6 +391,37 @@ app.post('/api/upload', function(req, res) {
     var filePath = path.join(UPLOADS_DIR, safeName);
     fs.writeFileSync(filePath, buf);
     res.json({ success: true, url: '/uploads/' + safeName });
+  } catch(err) { res.status(500).json({ error: err.message }); }
+});
+
+// ─── API: Save + Sync single template ───────────────────────────────────
+app.post('/api/template/save-and-sync', async function(req, res) {
+  try {
+    var tplPath = req.body.path;
+    var content = req.body.content;
+    var alias = req.body.alias;
+    if (!tplPath || !content) return res.status(400).json({ error: 'Missing path or content' });
+    var safePath = path.normalize(tplPath).replace(/^(\.\.(\\|\/|$))+/, '');
+    var filePath = path.join(ROOT, 'templates', safePath);
+    var dir = path.dirname(filePath);
+    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+    fs.writeFileSync(filePath, content, 'utf-8');
+    var syncResult = null;
+    if (alias) {
+      var ymlTemplates = parsePostmarkYml();
+      var tpl = ymlTemplates[alias];
+      if (tpl) {
+        var exists = false;
+        try { await postmarkRequest('GET', '/templates/' + alias); exists = true; } catch(e) {}
+        var body = { Name: tpl.name, Alias: alias, HtmlBody: content, TemplateType: tpl.type || 'Standard' };
+        if (tpl.subject) body.Subject = tpl.subject;
+        if (tpl.layout) body.LayoutTemplate = tpl.layout;
+        if (exists) await postmarkRequest('PUT', '/templates/' + alias, body);
+        else await postmarkRequest('POST', '/templates', body);
+        syncResult = { success: true, action: exists ? 'updated' : 'created' };
+      }
+    }
+    res.json({ saved: true, sync: syncResult });
   } catch(err) { res.status(500).json({ error: err.message }); }
 });
 

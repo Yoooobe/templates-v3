@@ -1,12 +1,12 @@
 // ═══════════════════════════════════════════════════════════
-// Templates V3 – App JavaScript
+// Templates V3 – App JavaScript (v2 Enhanced)
 // ═══════════════════════════════════════════════════════════
 
 let templates = [], currentTemplate = null, layoutHtml = '', sampleData = {};
 let isDirty = false, currentView = 'split', currentPage = 'editor';
 let designConfig = {}, chickenCornMd = '', iconsData = [];
 let editorMode = 'code'; // 'code' or 'wysiwyg'
-let postmarkStatus = {}; // alias -> {synced, error}
+let postmarkTemplates = {}; // alias -> {local, postmark, postmarkId}
 let tinymceReady = false;
 
 // ═══════════════════════════════════════════════════════════
@@ -45,8 +45,16 @@ function switchPage(page) {
 }
 
 // ═══════════════════════════════════════════════════════════
-// Sidebar
+// Sidebar with Postmark Status
 // ═══════════════════════════════════════════════════════════
+function getTemplateAlias(tpl) {
+  var prefix = 'v3-';
+  if (tpl.category === 'member') prefix = 'v3-member-';
+  else if (tpl.category === 'manager') prefix = 'v3-manager-';
+  else if (tpl.category === 'layout') return 'v3-base-layout';
+  return prefix + tpl.name.replace(/_/g, '-');
+}
+
 function renderSidebar() {
   var sidebar = document.getElementById('sidebar');
   var groups = { layout: { title: '🎨 Layout', items: [] }, general: { title: '📧 Gerais', items: [] }, member: { title: '👤 Membro', items: [] }, manager: { title: '👔 Gestor', items: [] } };
@@ -60,8 +68,11 @@ function renderSidebar() {
       var icon = icons[t.name] || '📄';
       var badge = key !== 'general' ? '<span class="cat-badge ' + key + '">' + key + '</span>' : '';
       var label = t.name.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
-      var syncDot = '<span class="sync-dot ' + (postmarkStatus[t.name] === 'synced' ? 'synced' : 'unsynced') + '"></span>';
-      html += '<div class="sidebar-item" data-id="' + t.id + '" onclick="selectTemplate(\'' + t.id + '\')"><span class="icon">' + icon + '</span><span class="label">' + label + '</span>' + badge + syncDot + '</div>';
+      var alias = getTemplateAlias(t);
+      var pm = postmarkTemplates[alias];
+      var syncClass = pm ? (pm.postmark ? 'synced' : 'local-only') : 'unknown';
+      var syncTitle = pm ? (pm.postmark ? 'Synced (ID: ' + pm.postmarkId + ')' : 'Local only – not on Postmark') : 'Checking...';
+      html += '<div class="sidebar-item" data-id="' + t.id + '" onclick="selectTemplate(\'' + t.id + '\')"><span class="icon">' + icon + '</span><span class="label">' + label + '</span>' + badge + '<span class="sync-dot ' + syncClass + '" title="' + syncTitle + '"></span></div>';
     });
     html += '</div>';
   }
@@ -87,6 +98,14 @@ async function selectTemplate(id) {
   editor.value = data.content;
   document.getElementById('editor-filename').textContent = id;
 
+  // Show Postmark alias info
+  var alias = getTemplateAlias(currentTemplate);
+  var pm = postmarkTemplates[alias];
+  var statusHtml = '<span class="pm-alias">' + alias + '</span>';
+  if (pm && pm.postmark) statusHtml += '<span class="pm-synced">✅ Postmark #' + pm.postmarkId + '</span>';
+  else statusHtml += '<span class="pm-not-synced">⚠️ Não sincronizado</span>';
+  document.getElementById('template-pm-status').innerHTML = statusHtml;
+
   // Update WYSIWYG if active
   if (editorMode === 'wysiwyg' && tinymce && tinymce.get('wysiwyg-editor')) {
     tinymce.get('wysiwyg-editor').setContent(data.content);
@@ -106,9 +125,8 @@ function getEditorContent() {
 function refreshPreview() {
   if (!currentTemplate) return;
   var html = getEditorContent();
-  // Inject design tokens
   html = injectDesignTokens(html);
-  if (currentTemplate.category !== 'layout') html = injectDesignTokens(layoutHtml).replace('{{{ @content }}}', html);
+  if (currentTemplate.category !== 'layout') html = injectDesignTokens(layoutHtml).replace('{{{ @content }}}', html).replace('{{{@content}}}', html);
   html = substituteVars(html, sampleData);
   var iframe = document.getElementById('preview-frame');
   iframe.srcdoc = html;
@@ -118,9 +136,6 @@ function refreshPreview() {
 function injectDesignTokens(html) {
   var c = designConfig.colors || {};
   var f = designConfig.fonts || {};
-  var img = designConfig.images || {};
-  var br = designConfig.borderRadius || {};
-  // Replace CSS variables / common patterns
   var replacements = {
     '#F29F40': c.primary || '#F29F40',
     '#4F46E5': c.secondary || '#4F46E5',
@@ -133,11 +148,8 @@ function injectDesignTokens(html) {
     '#EF4444': c.danger || '#EF4444'
   };
   for (var orig in replacements) {
-    if (replacements[orig] !== orig) {
-      html = html.split(orig).join(replacements[orig]);
-    }
+    if (replacements[orig] !== orig) html = html.split(orig).join(replacements[orig]);
   }
-  // Font replacement
   if (f.heading && f.heading !== 'Poppins') {
     html = html.replace(/font-family:\s*'Poppins'/g, "font-family: '" + f.heading + "'");
   }
@@ -149,7 +161,6 @@ async function saveTemplate() {
   updateSaveStatus('saving');
   try {
     var content = getEditorContent();
-    // Sync code editor if in WYSIWYG mode
     if (editorMode === 'wysiwyg') document.getElementById('code-editor').value = content;
     var res = await fetch('/api/template?path=' + encodeURIComponent(currentTemplate.id), {
       method: 'PUT', headers: { 'Content-Type': 'application/json' },
@@ -160,6 +171,38 @@ async function saveTemplate() {
     showToast('✅ Template salvo!');
     refreshPreview();
   } catch(err) { updateSaveStatus(''); showToast('❌ Erro: ' + err.message, 'error'); }
+}
+
+async function saveAndSync() {
+  if (!currentTemplate) return;
+  updateSaveStatus('saving');
+  var alias = getTemplateAlias(currentTemplate);
+  showToast('💾☁️ Salvando e sincronizando ' + alias + '...', 'info');
+  try {
+    var content = getEditorContent();
+    if (editorMode === 'wysiwyg') document.getElementById('code-editor').value = content;
+    var res = await fetch('/api/template/save-and-sync', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ path: currentTemplate.id, content: content, alias: alias })
+    });
+    var data = await res.json();
+    if (data.saved) {
+      isDirty = false; updateSaveStatus('saved');
+      if (data.sync && data.sync.success) {
+        showToast('✅ Salvo + Postmark ' + data.sync.action + '!');
+        // Update local status
+        if (!postmarkTemplates[alias]) postmarkTemplates[alias] = { local: true };
+        postmarkTemplates[alias].postmark = true;
+        renderSidebar();
+        // Re-select current
+        var sel = document.querySelector('.sidebar-item[data-id="' + currentTemplate.id + '"]');
+        if (sel) sel.classList.add('active');
+      } else {
+        showToast('✅ Salvo (Sync: ' + (data.sync ? 'erro' : 'sem alias') + ')', 'info');
+      }
+      refreshPreview();
+    } else throw new Error(data.error || 'Failed');
+  } catch(err) { updateSaveStatus(''); showToast('❌ ' + err.message, 'error'); }
 }
 
 function setView(view) {
@@ -182,6 +225,24 @@ function setDevice(device) {
 }
 
 // ═══════════════════════════════════════════════════════════
+// Copy HTML Widgets
+// ═══════════════════════════════════════════════════════════
+function copyRawHtml() {
+  if (!currentTemplate) { showToast('Selecione um template', 'error'); return; }
+  var html = getEditorContent();
+  navigator.clipboard.writeText(html).then(() => showToast('📋 HTML bruto copiado!'));
+}
+
+async function copyFinalHtml() {
+  if (!currentTemplate) { showToast('Selecione um template', 'error'); return; }
+  try {
+    var res = await fetch('/api/template/final-html?path=' + encodeURIComponent(currentTemplate.id));
+    var data = await res.json();
+    navigator.clipboard.writeText(data.html).then(() => showToast('📋 HTML final (com layout) copiado!'));
+  } catch(e) { showToast('❌ Erro ao copiar', 'error'); }
+}
+
+// ═══════════════════════════════════════════════════════════
 // Editor Mode Toggle (Code / WYSIWYG)
 // ═══════════════════════════════════════════════════════════
 function setEditorMode(mode) {
@@ -195,7 +256,6 @@ function setEditorMode(mode) {
     wysiwygWrap.style.display = 'block';
     initTinyMCE(codeEl.value);
   } else {
-    // Sync content back from WYSIWYG
     if (tinymce && tinymce.get('wysiwyg-editor')) {
       codeEl.value = tinymce.get('wysiwyg-editor').getContent();
       tinymce.get('wysiwyg-editor').destroy();
@@ -242,7 +302,6 @@ function initTinyMCE(content) {
       });
     },
     setup: function(editor) {
-      // Game icons button
       editor.ui.registry.addButton('gameicons', {
         icon: 'emoji',
         tooltip: '🎮 Ícones de Gamificação',
@@ -304,7 +363,6 @@ function filterIcons(query) {
 
 function insertIcon(el) {
   var svg = decodeURIComponent(el.dataset.svg);
-  // Create colored SVG with design primary color
   var color = (designConfig.colors || {}).primary || '#F29F40';
   svg = svg.replace(/currentColor/g, color);
   var imgTag = '<img src="data:image/svg+xml;base64,' + btoa(svg) + '" width="32" height="32" style="display:inline-block;vertical-align:middle;" alt="icon">';
@@ -323,15 +381,19 @@ function insertIcon(el) {
 }
 
 // ═══════════════════════════════════════════════════════════
-// Postmark Sync
+// Postmark Sync & Status
 // ═══════════════════════════════════════════════════════════
 async function checkPostmarkStatus() {
   try {
-    var res = await fetch('/api/postmark/status');
+    var res = await fetch('/api/postmark/templates');
     var data = await res.json();
     if (data.connected) {
-      document.getElementById('postmark-status').textContent = '☁️ Postmark ✅';
-      document.getElementById('postmark-status').title = data.total + ' templates no Postmark';
+      postmarkTemplates = data.status || {};
+      var synced = Object.values(postmarkTemplates).filter(t => t.postmark).length;
+      var total = Object.keys(postmarkTemplates).length;
+      document.getElementById('postmark-status').innerHTML = '☁️ Postmark <span class="pm-count">' + synced + '/' + total + '</span> ✅';
+      document.getElementById('postmark-status').title = synced + ' de ' + total + ' templates no Postmark';
+      renderSidebar();
     } else {
       document.getElementById('postmark-status').textContent = '☁️ Postmark ⚠️';
       document.getElementById('postmark-status').title = 'Não conectado: ' + (data.error || '');
@@ -343,16 +405,9 @@ async function checkPostmarkStatus() {
 
 async function syncCurrentTemplate() {
   if (!currentTemplate) { showToast('Selecione um template primeiro', 'error'); return; }
-  // Determine alias from template name
-  var prefix = 'v3-';
-  if (currentTemplate.category === 'member') prefix = 'v3-member-';
-  else if (currentTemplate.category === 'manager') prefix = 'v3-manager-';
-  else if (currentTemplate.category === 'layout') prefix = '';
-  var alias = currentTemplate.category === 'layout' ? 'v3-base-layout' : prefix + currentTemplate.name.replace(/_/g, '-');
-
+  var alias = getTemplateAlias(currentTemplate);
   showToast('☁️ Sincronizando ' + alias + '...', 'info');
   try {
-    // Save first
     await saveTemplate();
     var res = await fetch('/api/postmark/sync', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
@@ -361,6 +416,7 @@ async function syncCurrentTemplate() {
     var data = await res.json();
     if (data.success) {
       showToast('✅ ' + alias + ' ' + data.action + ' no Postmark!');
+      checkPostmarkStatus();
     } else {
       showToast('❌ Erro: ' + (data.error || 'Unknown'), 'error');
     }
@@ -369,7 +425,7 @@ async function syncCurrentTemplate() {
 
 async function syncAllTemplates() {
   var badge = document.getElementById('postmark-status');
-  badge.textContent = '☁️ Syncing...';
+  badge.innerHTML = '☁️ <span class="syncing-text">Syncing...</span>';
   badge.classList.add('syncing');
   showToast('☁️ Sincronizando todos os templates...', 'info');
 
@@ -380,17 +436,18 @@ async function syncAllTemplates() {
     var ok = results.filter(r => r.success).length;
     var fail = results.filter(r => r.error).length;
 
-    // Show modal with results
     var modal = document.getElementById('sync-modal');
-    var html = '';
+    var html = '<div class="sync-summary"><span class="sync-ok">✅ ' + ok + ' sincronizados</span>';
+    if (fail > 0) html += '<span class="sync-fail">❌ ' + fail + ' erros</span>';
+    html += '</div>';
     results.forEach(r => {
       html += '<div class="modal-item"><span class="status">' + (r.success ? '✅' : '❌') + '</span><span class="name">' + r.alias + '</span><span class="action">' + (r.action || r.error || '') + '</span></div>';
     });
     document.getElementById('sync-results').innerHTML = html;
     modal.classList.add('show');
 
-    badge.textContent = '☁️ Postmark ✅';
     badge.classList.remove('syncing');
+    checkPostmarkStatus();
     showToast('☁️ Sync completo: ' + ok + ' ✅ / ' + fail + ' ❌');
   } catch(err) {
     badge.textContent = '☁️ Postmark ❌';
@@ -448,7 +505,6 @@ function updateDesign() {
     borderRadius: { cards: document.getElementById('br-cards').value, buttons: document.getElementById('br-buttons').value, badges: document.getElementById('br-badges').value }
   };
   updateDesignPreview();
-  // Also update editor preview in real-time
   if (currentTemplate) refreshPreview();
 }
 
@@ -481,6 +537,25 @@ async function saveDesign() {
     showToast('✅ Design System salvo! Aplicado em tempo real a todos os templates.');
     if (currentTemplate) refreshPreview();
   } catch(err) { showToast('❌ Erro: ' + err.message, 'error'); }
+}
+
+async function saveDesignAndSync() {
+  showToast('🎨☁️ Salvando design e sincronizando com Postmark...', 'info');
+  var btn = document.querySelector('.design-sync-btn');
+  if (btn) { btn.disabled = true; btn.innerHTML = '🔄 Sincronizando...'; }
+  try {
+    var res = await fetch('/api/design/apply-and-sync', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ design: designConfig })
+    });
+    var data = await res.json();
+    var results = data.results || [];
+    var ok = results.filter(r => r.success).length;
+    var fail = results.filter(r => r.error).length;
+    showToast('✅ Design salvo + ' + ok + ' templates sincronizados no Postmark!');
+    checkPostmarkStatus();
+  } catch(err) { showToast('❌ ' + err.message, 'error'); }
+  if (btn) { btn.disabled = false; btn.innerHTML = '☁️ Salvar Design + Sync Postmark'; }
 }
 
 // ═══════════════════════════════════════════════════════════

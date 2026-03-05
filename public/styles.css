@@ -189,6 +189,14 @@ body {
 }
 .sidebar-item .sync-dot.synced {
   background: #22c55e;
+  box-shadow: 0 0 6px rgba(34, 197, 94, 0.4);
+}
+.sidebar-item .sync-dot.local-only {
+  background: #f29f40;
+  animation: pulse 2s infinite;
+}
+.sidebar-item .sync-dot.unknown {
+  background: #71717a;
 }
 .sidebar-item .sync-dot.unsynced {
   background: #71717a;
@@ -984,16 +992,75 @@ body {
   font-size: 11px;
   color: #71717a;
 }
-.modal-close {
-  margin-top: 16px;
-  width: 100%;
-  padding: 10px;
-  background: rgba(99, 102, 241, 0.15);
+.modal-close:hover {
+  background: rgba(99, 102, 241, 0.25);
+}
+
+/* ─── New: Copy & Save+Sync Buttons ───────────────────── */
+.toolbar-btn.copy-btn {
+  background: rgba(34, 197, 94, 0.1);
+  color: #22c55e;
+  border: 1px solid rgba(34, 197, 94, 0.2);
+  font-size: 11px;
+  padding: 5px 10px;
+}
+.toolbar-btn.copy-btn:hover {
+  background: rgba(34, 197, 94, 0.2);
+}
+.toolbar-btn.save-sync {
+  background: linear-gradient(135deg, #6366f1, #818cf8);
+  color: #fff;
+  font-size: 11px;
+}
+.toolbar-btn.save-sync:hover {
+  box-shadow: 0 4px 14px rgba(99, 102, 241, 0.35);
+  transform: translateY(-1px);
+}
+
+/* ─── Toolbar Postmark Status ─────────────────────────── */
+.toolbar-pm-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  color: #71717a;
+}
+.pm-alias {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 11px;
   color: #818cf8;
-  border: 1px solid rgba(99, 102, 241, 0.25);
-  border-radius: 10px;
-  font-size: 13px;
+  background: rgba(99, 102, 241, 0.1);
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+.pm-synced {
+  color: #22c55e;
+  font-size: 11px;
   font-weight: 600;
-  cursor: pointer;
-  font-family: "Poppins";
+}
+.pm-not-synced {
+  color: #f29f40;
+  font-size: 11px;
+  font-weight: 600;
+}
+.pm-count {
+  font-weight: 700;
+  font-size: 11px;
+}
+
+/* ─── Sync Summary ────────────────────────────────────── */
+.sync-summary {
+  display: flex;
+  gap: 16px;
+  padding: 12px 16px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 10px;
+  margin-bottom: 16px;
+  font-size: 14px;
+  font-weight: 600;
+}
+.sync-ok { color: #22c55e; }
+.sync-fail { color: #ef4444; }
+.syncing-text {
+  animation: pulse 1s infinite;
 }

@@ -233,6 +233,73 @@ end
 
 ---
 
+## ☁️ Sincronização com Postmark
+
+### Como Funciona
+
+O editor de templates v3 sincroniza diretamente com a API do Postmark. Cada template tem um **alias** único que mapeia 1:1 com um template no Postmark.
+
+### Status por Template
+
+No sidebar do editor, cada template mostra um **sync dot** colorido:
+- 🟢 **Verde** → Template sincronizado com Postmark
+- 🟠 **Laranja** → Template local, não sincronizado
+- ⚫ **Cinza** → Status desconhecido
+
+### Endpoints da API
+
+| Endpoint | Método | Descrição |
+|----------|--------|-----------|
+| `/api/postmark/templates` | GET | Status per-template (local vs Postmark) |
+| `/api/postmark/sync` | POST | Sync single template `{alias}` |
+| `/api/postmark/sync-all` | POST | Sync ALL templates |
+| `/api/template/save-and-sync` | POST | Save + Sync em 1 chamada |
+| `/api/design/apply-and-sync` | POST | Salvar design + sync all |
+| `/api/template/final-html?path=...` | GET | HTML final com layout |
+
+### Copiar HTML
+
+Na toolbar do editor, dois botões permitem copiar o HTML:
+- **📋 HTML** → Copia o HTML bruto do template (sem layout)
+- **📋 Final** → Copia o HTML completo com o layout base wrapper
+
+---
+
+## 🎨 Design System & Cores
+
+### Propagação de Cores
+
+As cores configuradas no painel **Design** do editor são aplicadas em tempo real ao preview de todos os templates. Quando você clica **"Salvar Design + Sync Postmark"**, as cores são salvas e todos os 19 templates são re-sincronizados com o Postmark.
+
+### Cores Disponíveis
+
+| Variável | Padrão | Uso |
+|----------|--------|-----|
+| `primary` | `#F29F40` | Botões, CTA, destaque |
+| `secondary` | `#4F46E5` | Links, badges, gradients |
+| `gradientStart` | `#6366F1` | Header gradient start |
+| `gradientEnd` | `#F29F40` | Header gradient end |
+| `background` | `#FFFFFF` | Fundo principal |
+| `backgroundAlt` | `#F9FAFB` | Fundo alternativo (cards) |
+| `textPrimary` | `#11181C` | Texto principal |
+| `textMuted` | `#71717A` | Texto secundário |
+| `success` | `#22C55E` | Pontos adicionados |
+| `danger` | `#EF4444` | Alertas, erros |
+
+### Config File
+
+O design é salvo em `config/design.json`:
+```json
+{
+  "colors": { "primary": "#F29F40", "secondary": "#4F46E5", ... },
+  "fonts": { "heading": "Poppins", "body": "Poppins" },
+  "images": { "logo": "https://...", "logoWidth": "180", "logoHeight": "40" },
+  "borderRadius": { "cards": "12", "buttons": "12", "badges": "9999" }
+}
+```
+
+---
+
 ## 📦 Lista Completa de Templates & Variáveis
 
 ### Membro
