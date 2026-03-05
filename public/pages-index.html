@@ -1,0 +1,1535 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Templates V3 – Editor (GitHub Pages)</title>
+    <meta
+      name="description"
+      content="Email template editor for 4Unik platform V3 – Yoobe. Preview, edit, and sync templates with Postmark."
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script
+      src="https://cdn.tiny.cloud/1/6kd71fdfbgaq4hzkp1fcyh1or8e4cpdv1a7vk3oq10gdxrtm/tinymce/7/tinymce.min.js"
+      referrerpolicy="origin"
+    ></script>
+    <link rel="stylesheet" href="styles.css" />
+    <style>
+      .config-modal {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.7);
+        backdrop-filter: blur(6px);
+        z-index: 60;
+        display: none;
+        justify-content: center;
+        align-items: center;
+      }
+      .config-modal.show {
+        display: flex;
+      }
+      .config-modal-box {
+        background: #1a1a2e;
+        border: 1px solid rgba(99, 102, 241, 0.2);
+        border-radius: 16px;
+        padding: 32px;
+        max-width: 480px;
+        width: 90%;
+      }
+      .config-modal-box h3 {
+        color: #e2e8f0;
+        font-size: 18px;
+        margin-bottom: 16px;
+      }
+      .config-modal-box label {
+        display: block;
+        color: #a1a1aa;
+        font-size: 12px;
+        margin-bottom: 4px;
+        font-weight: 500;
+      }
+      .config-modal-box input {
+        width: 100%;
+        padding: 10px 14px;
+        background: #0d0d17;
+        border: 1px solid rgba(99, 102, 241, 0.2);
+        border-radius: 8px;
+        color: #e2e8f0;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 13px;
+        margin-bottom: 16px;
+        outline: none;
+        box-sizing: border-box;
+      }
+      .config-modal-box input:focus {
+        border-color: rgba(99, 102, 241, 0.5);
+      }
+      .config-modal-box button {
+        width: 100%;
+        padding: 12px;
+        background: linear-gradient(135deg, #6366f1, #818cf8);
+        color: #fff;
+        border: none;
+        border-radius: 10px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        font-family: "Poppins";
+      }
+      .config-modal-box .note {
+        font-size: 11px;
+        color: #71717a;
+        margin-top: 12px;
+        line-height: 1.5;
+      }
+      .config-btn {
+        padding: 4px 10px;
+        background: rgba(99, 102, 241, 0.1);
+        color: #818cf8;
+        border: 1px solid rgba(99, 102, 241, 0.2);
+        border-radius: 6px;
+        font-size: 11px;
+        cursor: pointer;
+        font-family: "Poppins";
+      }
+      .config-btn:hover {
+        background: rgba(99, 102, 241, 0.2);
+      }
+      .gh-label {
+        font-size: 10px;
+        background: rgba(34, 197, 94, 0.15);
+        color: #22c55e;
+        padding: 2px 8px;
+        border-radius: 4px;
+        margin-left: 8px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app">
+      <header class="header">
+        <div class="header-logo">
+          <span>📧</span> Templates V3
+          <span class="gh-label">GitHub Pages</span>
+        </div>
+        <nav class="header-nav">
+          <button
+            class="header-nav-btn active"
+            data-page="editor"
+            onclick="switchPage('editor')"
+          >
+            ✏️ Editor
+          </button>
+          <button
+            class="header-nav-btn"
+            data-page="design"
+            onclick="switchPage('design')"
+          >
+            🎨 Design
+          </button>
+          <button
+            class="header-nav-btn"
+            data-page="chickencorn"
+            onclick="switchPage('chickencorn')"
+          >
+            🐔🌽 Chicken Corn
+          </button>
+        </nav>
+        <div class="header-info">
+          <button class="config-btn" onclick="showConfig()">⚙️ Config</button>
+          <span
+            class="header-badge postmark-badge"
+            id="postmark-status"
+            onclick="syncAllTemplates()"
+            title="Clique para sincronizar"
+            >☁️ Postmark</span
+          >
+          <span class="header-badge" id="template-count">📋 0 templates</span>
+          <span class="save-status" id="save-status"></span>
+        </div>
+      </header>
+
+      <aside class="sidebar" id="sidebar"></aside>
+
+      <div class="page page-editor active" id="page-editor">
+        <div class="toolbar">
+          <button
+            class="toolbar-tab active"
+            data-view="split"
+            onclick="setView('split')"
+          >
+            ⬜ Split
+          </button>
+          <button
+            class="toolbar-tab"
+            data-view="editor-only"
+            onclick="setView('editor-only')"
+          >
+            ✏️ Editor
+          </button>
+          <button
+            class="toolbar-tab"
+            data-view="preview-only"
+            onclick="setView('preview-only')"
+          >
+            👁️ Preview
+          </button>
+          <div class="toolbar-sep"></div>
+          <div id="template-pm-status" class="toolbar-pm-status"></div>
+          <div class="toolbar-right">
+            <button
+              class="toolbar-btn copy-btn"
+              onclick="copyRawHtml()"
+              title="Copiar HTML bruto"
+            >
+              📋 HTML
+            </button>
+            <button
+              class="toolbar-btn copy-btn"
+              onclick="copyFinalHtml()"
+              title="Copiar HTML com layout"
+            >
+              📋 Final
+            </button>
+            <button class="toolbar-btn icons" onclick="toggleIcons()">
+              🎮 Ícones
+            </button>
+            <button class="toolbar-btn sync" onclick="syncCurrentTemplate()">
+              ☁️ Sync
+            </button>
+            <button class="toolbar-btn save-sync" onclick="saveAndSync()">
+              💾☁️ Salvar & Sync
+            </button>
+            <button
+              class="toolbar-btn save"
+              id="btn-save"
+              onclick="saveTemplate()"
+            >
+              💾 Salvar
+            </button>
+          </div>
+        </div>
+        <div class="content split" id="content">
+          <div class="empty-state" id="empty-state" style="grid-column: 1/-1">
+            <div class="icon">📧</div>
+            <p>Selecione um template na barra lateral</p>
+            <p style="font-size: 12px; color: #3f3f46">
+              Edição em tempo real · Copiar HTML · Sync com Postmark
+            </p>
+          </div>
+          <div class="editor-panel" id="editor-panel" style="display: none">
+            <div class="panel-header">
+              <span class="dot"></span><span id="editor-filename">editor</span>
+              <div class="mode-toggle">
+                <button
+                  class="active"
+                  data-mode="code"
+                  onclick="setEditorMode('code')"
+                >
+                  ⌨️ Código
+                </button>
+                <button data-mode="wysiwyg" onclick="setEditorMode('wysiwyg')">
+                  🖊️ Visual
+                </button>
+              </div>
+            </div>
+            <textarea id="code-editor" spellcheck="false"></textarea>
+            <div id="wysiwyg-wrap" style="display: none"></div>
+          </div>
+          <div class="preview-panel" id="preview-panel" style="display: none">
+            <div class="panel-header">
+              <span>👁️ Preview</span>
+              <div class="device-buttons">
+                <button class="device-btn" onclick="setDevice('mobile')">
+                  📱
+                </button>
+                <button class="device-btn" onclick="setDevice('tablet')">
+                  📱+
+                </button>
+                <button
+                  class="device-btn active"
+                  onclick="setDevice('desktop')"
+                >
+                  🖥️
+                </button>
+              </div>
+            </div>
+            <div class="preview-frame-wrapper">
+              <iframe id="preview-frame" sandbox="allow-same-origin"></iframe>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="page page-design" id="page-design">
+        <div class="design-panel" id="design-panel">
+          <div class="design-section">
+            <div class="design-section-title"><span>🎨</span> Cores</div>
+            <div class="design-field">
+              <label>Primary</label>
+              <div class="color-row">
+                <div
+                  class="color-swatch"
+                  id="sw-primary"
+                  onclick="pickColor('primary')"
+                ></div>
+                <input
+                  type="text"
+                  id="clr-primary"
+                  oninput="updateDesign()"
+                /><input
+                  type="color"
+                  id="cp-primary"
+                  onchange="colorPicked('primary')"
+                />
+              </div>
+            </div>
+            <div class="design-field">
+              <label>Secondary</label>
+              <div class="color-row">
+                <div
+                  class="color-swatch"
+                  id="sw-secondary"
+                  onclick="pickColor('secondary')"
+                ></div>
+                <input
+                  type="text"
+                  id="clr-secondary"
+                  oninput="updateDesign()"
+                /><input
+                  type="color"
+                  id="cp-secondary"
+                  onchange="colorPicked('secondary')"
+                />
+              </div>
+            </div>
+            <div class="design-field">
+              <label>Gradient Start</label>
+              <div class="color-row">
+                <div
+                  class="color-swatch"
+                  id="sw-gradientStart"
+                  onclick="pickColor('gradientStart')"
+                ></div>
+                <input
+                  type="text"
+                  id="clr-gradientStart"
+                  oninput="updateDesign()"
+                /><input
+                  type="color"
+                  id="cp-gradientStart"
+                  onchange="colorPicked('gradientStart')"
+                />
+              </div>
+            </div>
+            <div class="design-field">
+              <label>Gradient End</label>
+              <div class="color-row">
+                <div
+                  class="color-swatch"
+                  id="sw-gradientEnd"
+                  onclick="pickColor('gradientEnd')"
+                ></div>
+                <input
+                  type="text"
+                  id="clr-gradientEnd"
+                  oninput="updateDesign()"
+                /><input
+                  type="color"
+                  id="cp-gradientEnd"
+                  onchange="colorPicked('gradientEnd')"
+                />
+              </div>
+            </div>
+            <div class="design-field">
+              <label>Background</label>
+              <div class="color-row">
+                <div
+                  class="color-swatch"
+                  id="sw-background"
+                  onclick="pickColor('background')"
+                ></div>
+                <input
+                  type="text"
+                  id="clr-background"
+                  oninput="updateDesign()"
+                /><input
+                  type="color"
+                  id="cp-background"
+                  onchange="colorPicked('background')"
+                />
+              </div>
+            </div>
+            <div class="design-field">
+              <label>Background Alt</label>
+              <div class="color-row">
+                <div
+                  class="color-swatch"
+                  id="sw-backgroundAlt"
+                  onclick="pickColor('backgroundAlt')"
+                ></div>
+                <input
+                  type="text"
+                  id="clr-backgroundAlt"
+                  oninput="updateDesign()"
+                /><input
+                  type="color"
+                  id="cp-backgroundAlt"
+                  onchange="colorPicked('backgroundAlt')"
+                />
+              </div>
+            </div>
+            <div class="design-field">
+              <label>Texto Principal</label>
+              <div class="color-row">
+                <div
+                  class="color-swatch"
+                  id="sw-textPrimary"
+                  onclick="pickColor('textPrimary')"
+                ></div>
+                <input
+                  type="text"
+                  id="clr-textPrimary"
+                  oninput="updateDesign()"
+                /><input
+                  type="color"
+                  id="cp-textPrimary"
+                  onchange="colorPicked('textPrimary')"
+                />
+              </div>
+            </div>
+            <div class="design-field">
+              <label>Texto Muted</label>
+              <div class="color-row">
+                <div
+                  class="color-swatch"
+                  id="sw-textMuted"
+                  onclick="pickColor('textMuted')"
+                ></div>
+                <input
+                  type="text"
+                  id="clr-textMuted"
+                  oninput="updateDesign()"
+                /><input
+                  type="color"
+                  id="cp-textMuted"
+                  onchange="colorPicked('textMuted')"
+                />
+              </div>
+            </div>
+            <div class="design-field">
+              <label>Success</label>
+              <div class="color-row">
+                <div
+                  class="color-swatch"
+                  id="sw-success"
+                  onclick="pickColor('success')"
+                ></div>
+                <input
+                  type="text"
+                  id="clr-success"
+                  oninput="updateDesign()"
+                /><input
+                  type="color"
+                  id="cp-success"
+                  onchange="colorPicked('success')"
+                />
+              </div>
+            </div>
+            <div class="design-field">
+              <label>Danger</label>
+              <div class="color-row">
+                <div
+                  class="color-swatch"
+                  id="sw-danger"
+                  onclick="pickColor('danger')"
+                ></div>
+                <input
+                  type="text"
+                  id="clr-danger"
+                  oninput="updateDesign()"
+                /><input
+                  type="color"
+                  id="cp-danger"
+                  onchange="colorPicked('danger')"
+                />
+              </div>
+            </div>
+          </div>
+          <div class="design-section">
+            <div class="design-section-title"><span>🔤</span> Fontes</div>
+            <div class="design-field">
+              <label>Heading</label
+              ><select id="font-heading" onchange="updateDesign()">
+                <option value="Poppins">Poppins</option>
+                <option value="Inter">Inter</option>
+                <option value="Roboto">Roboto</option>
+                <option value="Outfit">Outfit</option>
+                <option value="Montserrat">Montserrat</option>
+              </select>
+            </div>
+            <div class="design-field">
+              <label>Body</label
+              ><select id="font-body" onchange="updateDesign()">
+                <option value="Poppins">Poppins</option>
+                <option value="Inter">Inter</option>
+                <option value="Roboto">Roboto</option>
+                <option value="Outfit">Outfit</option>
+                <option value="Montserrat">Montserrat</option>
+              </select>
+            </div>
+          </div>
+          <div class="design-section">
+            <div class="design-section-title"><span>🖼️</span> Imagens</div>
+            <div class="design-field">
+              <label>Logo URL</label
+              ><input type="text" id="img-logo" oninput="updateDesign()" />
+            </div>
+            <div class="design-field">
+              <label>Logo Largura (px)</label
+              ><input
+                type="number"
+                id="img-logoWidth"
+                value="180"
+                oninput="updateDesign()"
+              />
+            </div>
+            <div class="design-field">
+              <label>Logo Altura (px)</label
+              ><input
+                type="number"
+                id="img-logoHeight"
+                value="40"
+                oninput="updateDesign()"
+              />
+            </div>
+          </div>
+          <div class="design-section">
+            <div class="design-section-title">
+              <span>📐</span> Border Radius
+            </div>
+            <div class="design-field">
+              <label>Cards (px)</label
+              ><input
+                type="number"
+                id="br-cards"
+                value="12"
+                oninput="updateDesign()"
+              />
+            </div>
+            <div class="design-field">
+              <label>Botões (px)</label
+              ><input
+                type="number"
+                id="br-buttons"
+                value="12"
+                oninput="updateDesign()"
+              />
+            </div>
+            <div class="design-field">
+              <label>Badges (px)</label
+              ><input
+                type="number"
+                id="br-badges"
+                value="9999"
+                oninput="updateDesign()"
+              />
+            </div>
+          </div>
+          <button class="design-save-btn" onclick="saveDesign()">
+            💾 Salvar Design (Local)
+          </button>
+          <button class="design-sync-btn" onclick="syncAllTemplates()">
+            ☁️ Sync All → Postmark
+          </button>
+        </div>
+        <div class="design-preview-area">
+          <div class="design-preview-card" id="design-preview-card"></div>
+        </div>
+      </div>
+
+      <div class="page page-chickencorn" id="page-chickencorn">
+        <div class="doc-nav">
+          <div class="doc-nav-title">🐔🌽 Chicken Corn</div>
+          <div class="doc-nav-section">Navegação</div>
+          <a
+            class="doc-nav-item active"
+            href="#"
+            onclick="scrollDocTo('visão-geral')"
+            >📋 Visão Geral</a
+          >
+          <a
+            class="doc-nav-item"
+            href="#"
+            onclick="scrollDocTo('configuração-inicial')"
+            >🔧 Configuração</a
+          >
+          <a
+            class="doc-nav-item"
+            href="#"
+            onclick="scrollDocTo('configuração-de-gatilhos')"
+            >🎯 Gatilhos</a
+          >
+          <a
+            class="doc-nav-item"
+            href="#"
+            onclick="scrollDocTo('integração-de-logobranding')"
+            >🖼️ Logo/Branding</a
+          >
+          <a
+            class="doc-nav-item"
+            href="#"
+            onclick="scrollDocTo('sincronização-com-postmark')"
+            >☁️ Postmark Sync</a
+          >
+          <a
+            class="doc-nav-item"
+            href="#"
+            onclick="scrollDocTo('design-system')"
+            >🎨 Design System</a
+          >
+          <a
+            class="doc-nav-item"
+            href="#"
+            onclick="scrollDocTo('lista-completa')"
+            >📦 Templates</a
+          >
+          <a
+            class="doc-nav-item"
+            href="#"
+            onclick="scrollDocTo('prompt-para-copilot')"
+            >🤖 Prompt Copilot</a
+          >
+          <div class="doc-nav-section" style="margin-top: 16px">Ações</div>
+          <button class="doc-nav-download" onclick="downloadDoc()">
+            📥 Download .md
+          </button>
+          <button class="doc-nav-copy" onclick="copyPrompt()">
+            📋 Copiar Prompt
+          </button>
+          <button class="doc-nav-copy" onclick="copyAllDoc()">
+            📄 Copiar Tudo
+          </button>
+        </div>
+        <div class="doc-content" id="doc-content">
+          <div class="md-content" id="md-content">
+            <div style="text-align: center; padding: 60px; color: #52525b">
+              <div style="font-size: 48px; opacity: 0.5; margin-bottom: 16px">
+                🐔🌽
+              </div>
+              <p>Carregando...</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="icons-panel" id="icons-panel">
+      <div class="icons-panel-header">
+        <h3>🎮 Ícones</h3>
+        <button class="icons-close" onclick="toggleIcons()">✕</button>
+      </div>
+      <input
+        class="icons-search"
+        placeholder="🔍 Buscar..."
+        oninput="filterIcons(this.value)"
+      />
+      <div id="icons-grid-container"></div>
+    </div>
+
+    <div
+      class="modal-overlay"
+      id="sync-modal"
+      onclick="if (event.target === this) closeSyncModal();"
+    >
+      <div class="modal">
+        <h3>☁️ Sincronização</h3>
+        <div id="sync-results"></div>
+        <button class="modal-close" onclick="closeSyncModal()">Fechar</button>
+      </div>
+    </div>
+
+    <div
+      class="config-modal"
+      id="config-modal"
+      onclick="if (event.target === this) hideConfig();"
+    >
+      <div class="config-modal-box">
+        <h3>⚙️ Configuração Postmark</h3>
+        <label>Server API Token</label>
+        <input
+          type="password"
+          id="cfg-token"
+          placeholder="Seu Postmark Server API Token"
+        />
+        <button onclick="saveConfig()">💾 Salvar Configuração</button>
+        <p class="note">
+          ⚠️ O token é salvo apenas no localStorage do seu navegador. Ele é
+          usado para chamadas diretas à API do Postmark.
+        </p>
+      </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script src="data.js"></script>
+    <script>
+      // ══════════════════════════════════════
+      // Templates V3 – Static (GitHub Pages)
+      // ══════════════════════════════════════
+      let templates = [],
+        currentTemplate = null,
+        layoutHtml = "",
+        sampleData = {};
+      let isDirty = false,
+        currentView = "split",
+        currentPage = "editor";
+      let designConfig = {},
+        chickenCornMd = "",
+        iconsData = [];
+      let editorMode = "code",
+        postmarkTemplates = {};
+
+      function getPostmarkToken() {
+        return localStorage.getItem("pm_token") || "";
+      }
+      function showConfig() {
+        document.getElementById("cfg-token").value = getPostmarkToken();
+        document.getElementById("config-modal").classList.add("show");
+      }
+      function hideConfig() {
+        document.getElementById("config-modal").classList.remove("show");
+      }
+      function saveConfig() {
+        localStorage.setItem(
+          "pm_token",
+          document.getElementById("cfg-token").value.trim(),
+        );
+        hideConfig();
+        showToast("⚙️ Token salvo!");
+        checkPostmarkStatus();
+      }
+
+      async function pmRequest(method, endpoint, body) {
+        var token = getPostmarkToken();
+        if (!token)
+          throw new Error("Configure o Postmark token primeiro (⚙️ Config)");
+        var opts = {
+          method,
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+            "X-Postmark-Server-Token": token,
+          },
+        };
+        if (body) opts.body = JSON.stringify(body);
+        var r = await fetch("https://api.postmarkapp.com" + endpoint, opts);
+        var d = await r.json();
+        if (!r.ok) throw new Error(d.Message || "Postmark error");
+        return d;
+      }
+
+      function init() {
+        templates = window.__TEMPLATES_DATA__ || [];
+        layoutHtml = window.__LAYOUT_HTML__ || "";
+        sampleData = window.__SAMPLE_DATA__ || {};
+        designConfig =
+          JSON.parse(localStorage.getItem("design_config") || "null") ||
+          window.__DESIGN_DEFAULT__ ||
+          {};
+        chickenCornMd = window.__CHICKEN_CORN__ || "";
+        iconsData = window.__ICONS_DATA__ || [];
+        document.getElementById("template-count").textContent =
+          "📋 " + templates.length + " templates";
+        renderSidebar();
+        loadDesignUI();
+        renderDocs();
+        renderIcons();
+        checkPostmarkStatus();
+      }
+
+      function switchPage(page) {
+        currentPage = page;
+        document
+          .querySelectorAll(".page")
+          .forEach((p) => p.classList.remove("active"));
+        document.getElementById("page-" + page).classList.add("active");
+        document
+          .querySelectorAll(".header-nav-btn")
+          .forEach((b) =>
+            b.classList.toggle("active", b.dataset.page === page),
+          );
+        document.getElementById("sidebar").style.display =
+          page === "editor" ? "" : "none";
+        document.querySelector(".app").style.gridTemplateColumns =
+          page === "editor" ? "280px 1fr" : "1fr";
+        if (page === "design") updateDesignPreview();
+      }
+
+      function getTemplateAlias(tpl) {
+        if (tpl.category === "layout") return "v3-base-layout";
+        var p =
+          tpl.category === "member"
+            ? "v3-member-"
+            : tpl.category === "manager"
+              ? "v3-manager-"
+              : "v3-";
+        return p + tpl.name.replace(/_/g, "-");
+      }
+
+      function renderSidebar() {
+        var sb = document.getElementById("sidebar");
+        var groups = {
+          layout: { title: "🎨 Layout", items: [] },
+          general: { title: "📧 Gerais", items: [] },
+          member: { title: "👤 Membro", items: [] },
+          manager: { title: "👔 Gestor", items: [] },
+        };
+        var icons = {
+          base_layout: "🎨",
+          welcome: "🎉",
+          password_reset: "🔐",
+          order_confirmation: "✅",
+          order_status_update: "📋",
+          invoice: "📄",
+          onboarding_invite: "🎁",
+          points_added: "⭐",
+          points_spent: "💸",
+          order_status: "📦",
+          campaign_invite: "🎉",
+          user_created: "👤",
+          campaign_sent: "📤",
+          campaign_started: "🚀",
+          campaign_ended: "🏁",
+          gift_created: "🎁",
+          gift_status: "📋",
+          crud_update: "🔔",
+          low_stock: "⚠️",
+        };
+        templates.forEach((t) => {
+          if (groups[t.category]) groups[t.category].items.push(t);
+        });
+        var html = "";
+        for (var key in groups) {
+          var g = groups[key];
+          if (!g.items.length) continue;
+          html +=
+            '<div class="sidebar-group"><div class="sidebar-group-title">' +
+            g.title +
+            "</div>";
+          g.items.forEach((t) => {
+            var alias = getTemplateAlias(t),
+              pm = postmarkTemplates[alias];
+            var sc = pm ? (pm.synced ? "synced" : "local-only") : "unknown";
+            var badge =
+              key !== "general" && key !== "layout"
+                ? '<span class="cat-badge ' + key + '">' + key + "</span>"
+                : key === "layout"
+                  ? '<span class="cat-badge layout">layout</span>'
+                  : "";
+            html +=
+              '<div class="sidebar-item" data-id="' +
+              t.id +
+              '" onclick="selectTemplate(\'' +
+              t.id +
+              '\')"><span class="icon">' +
+              (icons[t.name] || "📄") +
+              '</span><span class="label">' +
+              t.name
+                .replace(/_/g, " ")
+                .replace(/\b\w/g, (c) => c.toUpperCase()) +
+              "</span>" +
+              badge +
+              '<span class="sync-dot ' +
+              sc +
+              '"></span></div>';
+          });
+          html += "</div>";
+        }
+        sb.innerHTML = html;
+      }
+
+      function selectTemplate(id) {
+        if (
+          isDirty &&
+          currentTemplate &&
+          !confirm("Alterações não salvas. Continuar?")
+        )
+          return;
+        document
+          .querySelectorAll(".sidebar-item")
+          .forEach((el) => el.classList.remove("active"));
+        var sel = document.querySelector('.sidebar-item[data-id="' + id + '"]');
+        if (sel) sel.classList.add("active");
+        currentTemplate = templates.find((t) => t.id === id);
+        var saved = localStorage.getItem("tpl_" + id);
+        var content = saved || currentTemplate.content;
+        document.getElementById("empty-state").style.display = "none";
+        document.getElementById("editor-panel").style.display = "flex";
+        document.getElementById("preview-panel").style.display = "flex";
+        applyView();
+        document.getElementById("code-editor").value = content;
+        document.getElementById("editor-filename").textContent = id;
+        var alias = getTemplateAlias(currentTemplate),
+          pm = postmarkTemplates[alias];
+        var stHtml = '<span class="pm-alias">' + alias + "</span>";
+        stHtml +=
+          pm && pm.synced
+            ? '<span class="pm-synced">✅ Postmark</span>'
+            : '<span class="pm-not-synced">⚠️ Não sincronizado</span>';
+        document.getElementById("template-pm-status").innerHTML = stHtml;
+        if (
+          editorMode === "wysiwyg" &&
+          tinymce &&
+          tinymce.get("wysiwyg-editor")
+        )
+          tinymce.get("wysiwyg-editor").setContent(content);
+        isDirty = false;
+        updateSaveStatus("");
+        refreshPreview();
+      }
+
+      function getEditorContent() {
+        if (
+          editorMode === "wysiwyg" &&
+          tinymce &&
+          tinymce.get("wysiwyg-editor")
+        )
+          return tinymce.get("wysiwyg-editor").getContent();
+        return document.getElementById("code-editor").value;
+      }
+
+      function refreshPreview() {
+        if (!currentTemplate) return;
+        var html = getEditorContent();
+        html = injectDesignTokens(html);
+        if (currentTemplate.category !== "layout")
+          html = injectDesignTokens(layoutHtml)
+            .replace("{{{ @content }}}", html)
+            .replace("{{{@content}}}", html);
+        html = substituteVars(html, sampleData);
+        document.getElementById("preview-frame").srcdoc = html;
+      }
+
+      function injectDesignTokens(html) {
+        var c = designConfig.colors || {};
+        var rep = {
+          "#F29F40": c.primary,
+          "#4F46E5": c.secondary,
+          "#6366F1": c.gradientStart,
+          "#FFFFFF": c.background,
+          "#F9FAFB": c.backgroundAlt,
+          "#11181C": c.textPrimary,
+          "#71717A": c.textMuted,
+          "#22C55E": c.success,
+          "#EF4444": c.danger,
+        };
+        for (var o in rep) {
+          if (rep[o] && rep[o] !== o) html = html.split(o).join(rep[o]);
+        }
+        return html;
+      }
+
+      function saveTemplate() {
+        if (!currentTemplate) return;
+        var content = getEditorContent();
+        localStorage.setItem("tpl_" + currentTemplate.id, content);
+        currentTemplate.content = content;
+        isDirty = false;
+        updateSaveStatus("saved");
+        showToast("✅ Salvo (localStorage)!");
+        refreshPreview();
+      }
+
+      async function saveAndSync() {
+        if (!currentTemplate) return;
+        saveTemplate();
+        await syncCurrentTemplate();
+      }
+
+      async function syncCurrentTemplate() {
+        if (!currentTemplate) return;
+        var alias = getTemplateAlias(currentTemplate);
+        showToast("☁️ Sincronizando " + alias + "...", "info");
+        try {
+          var content = getEditorContent(),
+            exists = false;
+          try {
+            await pmRequest("GET", "/templates/" + alias);
+            exists = true;
+          } catch (e) {}
+          var tpl = {
+            Name: alias,
+            Alias: alias,
+            HtmlBody: content,
+            TemplateType:
+              currentTemplate.category === "layout" ? "Layout" : "Standard",
+          };
+          if (currentTemplate.category !== "layout")
+            tpl.LayoutTemplate = "v3-base-layout";
+          if (exists) await pmRequest("PUT", "/templates/" + alias, tpl);
+          else await pmRequest("POST", "/templates", tpl);
+          postmarkTemplates[alias] = { synced: true };
+          renderSidebar();
+          selectTemplate(currentTemplate.id);
+          showToast(
+            "✅ " + alias + " " + (exists ? "atualizado" : "criado") + "!",
+          );
+        } catch (e) {
+          showToast("❌ " + e.message, "error");
+        }
+      }
+
+      async function syncAllTemplates() {
+        var badge = document.getElementById("postmark-status");
+        badge.innerHTML = '☁️ <span class="syncing-text">Syncing...</span>';
+        badge.classList.add("syncing");
+        var results = [],
+          sorted = [...templates].sort(
+            (a, b) =>
+              (a.category === "layout" ? 0 : 1) -
+              (b.category === "layout" ? 0 : 1),
+          );
+        for (var t of sorted) {
+          var alias = getTemplateAlias(t);
+          try {
+            var content = localStorage.getItem("tpl_" + t.id) || t.content,
+              exists = false;
+            try {
+              await pmRequest("GET", "/templates/" + alias);
+              exists = true;
+            } catch (e) {}
+            var body = {
+              Name: alias,
+              Alias: alias,
+              HtmlBody: content,
+              TemplateType: t.category === "layout" ? "Layout" : "Standard",
+            };
+            if (t.category !== "layout") body.LayoutTemplate = "v3-base-layout";
+            if (exists) await pmRequest("PUT", "/templates/" + alias, body);
+            else await pmRequest("POST", "/templates", body);
+            results.push({
+              alias,
+              success: true,
+              action: exists ? "updated" : "created",
+            });
+            postmarkTemplates[alias] = { synced: true };
+          } catch (e) {
+            results.push({ alias, error: e.message });
+          }
+        }
+        badge.classList.remove("syncing");
+        var ok = results.filter((r) => r.success).length,
+          fail = results.filter((r) => r.error).length;
+        var html =
+          '<div class="sync-summary"><span class="sync-ok">✅ ' +
+          ok +
+          "</span>" +
+          (fail ? '<span class="sync-fail">❌ ' + fail + "</span>" : "") +
+          "</div>";
+        results.forEach((r) => {
+          html +=
+            '<div class="modal-item"><span class="status">' +
+            (r.success ? "✅" : "❌") +
+            '</span><span class="name">' +
+            r.alias +
+            '</span><span class="action">' +
+            (r.action || r.error || "") +
+            "</span></div>";
+        });
+        document.getElementById("sync-results").innerHTML = html;
+        document.getElementById("sync-modal").classList.add("show");
+        checkPostmarkStatus();
+        renderSidebar();
+      }
+
+      async function checkPostmarkStatus() {
+        try {
+          var data = await pmRequest(
+            "GET",
+            "/templates?count=100&offset=0&TemplateType=All",
+          );
+          var synced = 0;
+          (data.Templates || []).forEach((t) => {
+            var a = t.Alias || t.Name;
+            postmarkTemplates[a] = { synced: true, id: t.TemplateId };
+            synced++;
+          });
+          document.getElementById("postmark-status").innerHTML =
+            '☁️ Postmark <span class="pm-count">' + synced + "</span> ✅";
+          renderSidebar();
+        } catch (e) {
+          document.getElementById("postmark-status").innerHTML =
+            '☁️ <span style="opacity:.6">Sem token</span>';
+        }
+      }
+
+      function closeSyncModal() {
+        document.getElementById("sync-modal").classList.remove("show");
+      }
+      function setView(v) {
+        currentView = v;
+        document
+          .querySelectorAll(".toolbar-tab[data-view]")
+          .forEach((t) => t.classList.toggle("active", t.dataset.view === v));
+        applyView();
+      }
+      function applyView() {
+        document.getElementById("content").className = "content " + currentView;
+        if (currentTemplate) {
+          document.getElementById("editor-panel").style.display =
+            currentView === "preview-only" ? "none" : "flex";
+          document.getElementById("preview-panel").style.display =
+            currentView === "editor-only" ? "none" : "flex";
+        }
+      }
+      function setDevice(d) {
+        document.getElementById("preview-frame").className =
+          d !== "desktop" ? d : "";
+        document
+          .querySelectorAll(".device-btn")
+          .forEach((b) => b.classList.remove("active"));
+        event.target.classList.add("active");
+      }
+
+      function copyRawHtml() {
+        if (!currentTemplate) return;
+        navigator.clipboard
+          .writeText(getEditorContent())
+          .then(() => showToast("📋 HTML copiado!"));
+      }
+      function copyFinalHtml() {
+        if (!currentTemplate) return;
+        var h = getEditorContent();
+        if (currentTemplate.category !== "layout")
+          h = layoutHtml
+            .replace("{{{@content}}}", h)
+            .replace("{{{ @content }}}", h);
+        navigator.clipboard
+          .writeText(h)
+          .then(() => showToast("📋 HTML final copiado!"));
+      }
+
+      function setEditorMode(mode) {
+        editorMode = mode;
+        document
+          .querySelectorAll(".mode-toggle button")
+          .forEach((b) =>
+            b.classList.toggle("active", b.dataset.mode === mode),
+          );
+        if (mode === "wysiwyg") {
+          document.getElementById("code-editor").style.display = "none";
+          document.getElementById("wysiwyg-wrap").style.display = "block";
+          initTinyMCE(document.getElementById("code-editor").value);
+        } else {
+          if (tinymce && tinymce.get("wysiwyg-editor")) {
+            document.getElementById("code-editor").value = tinymce
+              .get("wysiwyg-editor")
+              .getContent();
+            tinymce.get("wysiwyg-editor").destroy();
+          }
+          document.getElementById("code-editor").style.display = "block";
+          document.getElementById("wysiwyg-wrap").style.display = "none";
+          refreshPreview();
+        }
+      }
+      function initTinyMCE(content) {
+        if (!document.getElementById("wysiwyg-editor")) {
+          var ta = document.createElement("textarea");
+          ta.id = "wysiwyg-editor";
+          document.getElementById("wysiwyg-wrap").appendChild(ta);
+        }
+        if (tinymce && tinymce.get("wysiwyg-editor"))
+          tinymce.get("wysiwyg-editor").destroy();
+        tinymce.init({
+          selector: "#wysiwyg-editor",
+          height: "100%",
+          menubar: false,
+          plugins: "lists link image table code fullscreen",
+          toolbar:
+            "undo redo | blocks | bold italic underline forecolor | alignleft aligncenter alignright | bullist numlist | link image | code fullscreen",
+          content_style:
+            "body{font-family:'Poppins',sans-serif;font-size:14px;padding:16px;}",
+          skin: "oxide-dark",
+          content_css: "dark",
+          setup: function (ed) {
+            ed.on("change keyup", function () {
+              isDirty = true;
+              clearTimeout(window._pt);
+              window._pt = setTimeout(function () {
+                document.getElementById("code-editor").value = ed.getContent();
+                refreshPreview();
+              }, 500);
+            });
+          },
+          init_instance_callback: function (ed) {
+            ed.setContent(content || "");
+          },
+        });
+      }
+
+      function toggleIcons() {
+        document.getElementById("icons-panel").classList.toggle("open");
+      }
+      function renderIcons() {
+        var p = document.getElementById("icons-grid-container");
+        if (!p) return;
+        var h = "";
+        (iconsData || []).forEach((c) => {
+          h +=
+            '<div class="icon-category-title">' +
+            c.category +
+            '</div><div class="icon-grid">';
+          (c.icons || []).forEach((i) => {
+            h +=
+              '<div class="icon-item" title="' +
+              i.name +
+              '" onclick="insertIcon(this)" data-svg="' +
+              encodeURIComponent(i.svg) +
+              '">' +
+              i.svg +
+              "</div>";
+          });
+          h += "</div>";
+        });
+        p.innerHTML =
+          h ||
+          '<p style="color:#52525B;padding:16px;">Nenhum ícone disponível</p>';
+      }
+      function filterIcons(q) {
+        if (!q) {
+          renderIcons();
+          return;
+        }
+        q = q.toLowerCase();
+        var h = "";
+        (iconsData || []).forEach((c) => {
+          var f = (c.icons || []).filter((i) =>
+            i.name.toLowerCase().includes(q),
+          );
+          if (!f.length) return;
+          h +=
+            '<div class="icon-category-title">' +
+            c.category +
+            '</div><div class="icon-grid">';
+          f.forEach((i) => {
+            h +=
+              '<div class="icon-item" title="' +
+              i.name +
+              '" onclick="insertIcon(this)" data-svg="' +
+              encodeURIComponent(i.svg) +
+              '">' +
+              i.svg +
+              "</div>";
+          });
+          h += "</div>";
+        });
+        document.getElementById("icons-grid-container").innerHTML =
+          h || '<p style="color:#52525B;padding:12px;">Nenhum</p>';
+      }
+      function insertIcon(el) {
+        var svg = decodeURIComponent(el.dataset.svg).replace(
+          /currentColor/g,
+          (designConfig.colors || {}).primary || "#F29F40",
+        );
+        var img =
+          '<img src="data:image/svg+xml;base64,' +
+          btoa(svg) +
+          '" width="32" height="32" alt="icon">';
+        if (
+          editorMode === "wysiwyg" &&
+          tinymce &&
+          tinymce.get("wysiwyg-editor")
+        )
+          tinymce.get("wysiwyg-editor").insertContent(img);
+        else {
+          var ed = document.getElementById("code-editor");
+          var p = ed.selectionStart;
+          ed.value =
+            ed.value.substring(0, p) +
+            img +
+            ed.value.substring(ed.selectionEnd);
+          isDirty = true;
+          refreshPreview();
+        }
+        showToast("🎮 Inserido!");
+      }
+
+      function loadDesignUI() {
+        var c = designConfig.colors || {};
+        for (var k in c) {
+          var i = document.getElementById("clr-" + k),
+            s = document.getElementById("sw-" + k);
+          if (i) i.value = c[k];
+          if (s) s.style.background = c[k];
+        }
+        var f = designConfig.fonts || {};
+        if (f.heading)
+          document.getElementById("font-heading").value = f.heading;
+        if (f.body) document.getElementById("font-body").value = f.body;
+        var img = designConfig.images || {};
+        if (img.logo) document.getElementById("img-logo").value = img.logo;
+        if (img.logoWidth)
+          document.getElementById("img-logoWidth").value = img.logoWidth;
+        if (img.logoHeight)
+          document.getElementById("img-logoHeight").value = img.logoHeight;
+        var br = designConfig.borderRadius || {};
+        if (br.cards) document.getElementById("br-cards").value = br.cards;
+        if (br.buttons)
+          document.getElementById("br-buttons").value = br.buttons;
+        if (br.badges) document.getElementById("br-badges").value = br.badges;
+      }
+      function pickColor(k) {
+        document.getElementById("cp-" + k).click();
+      }
+      function colorPicked(k) {
+        var v = document.getElementById("cp-" + k).value;
+        document.getElementById("clr-" + k).value = v;
+        document.getElementById("sw-" + k).style.background = v;
+        updateDesign();
+      }
+      function updateDesign() {
+        var keys = [
+            "primary",
+            "secondary",
+            "gradientStart",
+            "gradientEnd",
+            "background",
+            "backgroundAlt",
+            "textPrimary",
+            "textMuted",
+            "success",
+            "danger",
+          ],
+          c = {};
+        keys.forEach((k) => {
+          var el = document.getElementById("clr-" + k);
+          if (el) {
+            c[k] = el.value;
+            var sw = document.getElementById("sw-" + k);
+            if (sw) sw.style.background = el.value;
+          }
+        });
+        designConfig = {
+          colors: c,
+          fonts: {
+            heading: document.getElementById("font-heading").value,
+            body: document.getElementById("font-body").value,
+          },
+          images: {
+            logo: document.getElementById("img-logo").value,
+            logoWidth: document.getElementById("img-logoWidth").value,
+            logoHeight: document.getElementById("img-logoHeight").value,
+          },
+          borderRadius: {
+            cards: document.getElementById("br-cards").value,
+            buttons: document.getElementById("br-buttons").value,
+            badges: document.getElementById("br-badges").value,
+          },
+        };
+        updateDesignPreview();
+        if (currentTemplate) refreshPreview();
+      }
+      function updateDesignPreview() {
+        var c = designConfig.colors || {},
+          f = designConfig.fonts || {},
+          img = designConfig.images || {},
+          br = designConfig.borderRadius || {};
+        document.getElementById("design-preview-card").innerHTML =
+          '<div style="background:linear-gradient(135deg,' +
+          (c.gradientStart || "#6366F1") +
+          "," +
+          (c.gradientEnd || "#F29F40") +
+          ');padding:28px;text-align:center;border-radius:16px 16px 0 0;">' +
+          (img.logo
+            ? '<img src="' +
+              img.logo +
+              '" width="' +
+              (img.logoWidth || 180) +
+              '" height="' +
+              (img.logoHeight || 40) +
+              '" style="margin-bottom:8px;">'
+            : "") +
+          "<p style=\"font-family:'" +
+          (f.heading || "Poppins") +
+          "',sans-serif;color:#FFF;font-weight:700;font-size:16px;margin:0;\">Preview do Design</p></div><div style=\"padding:28px;font-family:'" +
+          (f.body || "Poppins") +
+          '\',sans-serif;"><h2 style="color:' +
+          (c.textPrimary || "#11181C") +
+          ';font-size:20px;margin:0 0 8px;">⭐ Pontos Adicionados!</h2><p style="color:' +
+          (c.textMuted || "#71717A") +
+          ';font-size:14px;margin:0 0 20px;">Olá, <strong style="color:' +
+          (c.textPrimary || "#11181C") +
+          '">Maria</strong>!</p><div style="display:flex;gap:12px;margin:20px 0;"><div style="flex:1;background:' +
+          (c.backgroundAlt || "#F9FAFB") +
+          ";border-radius:" +
+          (br.cards || 12) +
+          'px;padding:16px;text-align:center;"><p style="font-size:24px;font-weight:700;color:' +
+          (c.success || "#22C55E") +
+          ';margin:0;">+500</p><p style="font-size:11px;color:' +
+          (c.textMuted || "#71717A") +
+          ';margin:4px 0 0;">Add</p></div><div style="flex:1;background:' +
+          (c.backgroundAlt || "#F9FAFB") +
+          ";border-radius:" +
+          (br.cards || 12) +
+          'px;padding:16px;text-align:center;"><p style="font-size:24px;font-weight:700;color:' +
+          (c.secondary || "#4F46E5") +
+          ';margin:0;">3.750</p><p style="font-size:11px;color:' +
+          (c.textMuted || "#71717A") +
+          ';margin:4px 0 0;">Total</p></div></div><div style="text-align:center;margin:24px 0;"><a href="#" style="display:inline-block;padding:12px 32px;background:linear-gradient(135deg,' +
+          (c.secondary || "#4F46E5") +
+          "," +
+          (c.gradientStart || "#6366F1") +
+          ");color:#FFF;text-decoration:none;border-radius:" +
+          (br.buttons || 12) +
+          'px;font-weight:600;font-size:14px;">🛍️ Usar Pontos</a></div></div>';
+      }
+      function saveDesign() {
+        localStorage.setItem("design_config", JSON.stringify(designConfig));
+        showToast("✅ Design salvo (localStorage)!");
+        if (currentTemplate) refreshPreview();
+      }
+
+      function renderDocs() {
+        var el = document.getElementById("md-content");
+        if (typeof marked !== "undefined")
+          el.innerHTML = marked.parse(chickenCornMd);
+        else el.innerHTML = "<pre>" + chickenCornMd + "</pre>";
+      }
+      function scrollDocTo(h) {
+        var dc = document.getElementById("doc-content"),
+          slug = h.toLowerCase().replace(/[^a-zà-ú0-9]+/g, "-");
+        var heads = dc.querySelectorAll("h1,h2,h3");
+        for (var i = 0; i < heads.length; i++) {
+          if (
+            heads[i].textContent
+              .toLowerCase()
+              .replace(/[^a-zà-ú0-9]+/g, "-")
+              .includes(slug)
+          ) {
+            heads[i].scrollIntoView({ behavior: "smooth" });
+            break;
+          }
+        }
+        document
+          .querySelectorAll(".doc-nav-item")
+          .forEach((e) => e.classList.remove("active"));
+        if (event && event.target) event.target.classList.add("active");
+        return false;
+      }
+      function downloadDoc() {
+        var b = new Blob([chickenCornMd], { type: "text/markdown" });
+        var a = document.createElement("a");
+        a.href = URL.createObjectURL(b);
+        a.download = "chicken-corn.md";
+        a.click();
+        showToast("📥 Download!");
+      }
+      function copyPrompt() {
+        var s = chickenCornMd.indexOf("```\nEstou integrando"),
+          e = chickenCornMd.indexOf("```\n\n---", s);
+        if (s === -1) {
+          copyAllDoc();
+          return;
+        }
+        navigator.clipboard
+          .writeText(chickenCornMd.substring(s + 4, e))
+          .then(() => showToast("📋 Prompt copiado!"));
+      }
+      function copyAllDoc() {
+        navigator.clipboard
+          .writeText(chickenCornMd)
+          .then(() => showToast("📄 Tudo copiado!"));
+      }
+
+      function substituteVars(html, data, d) {
+        d = d || 0;
+        if (d > 5) return html;
+        html = html.replace(
+          /\{\{#each\s+(\w+)\}\}([\s\S]*?)\{\{\/each\}\}/g,
+          (m, k, inner) => {
+            var a = data[k];
+            if (!Array.isArray(a)) return "";
+            return a
+              .map((i) =>
+                substituteVars(inner, Object.assign({}, data, i), d + 1),
+              )
+              .join("");
+          },
+        );
+        html = html.replace(
+          /\{\{#(\w+(?:\.\w+)*)\}\}([\s\S]*?)\{\{\/\1\}\}/g,
+          (m, k, inner) =>
+            gv(data, k) ? substituteVars(inner, data, d + 1) : "",
+        );
+        html = html.replace(
+          /\{\{\^(\w+(?:\.\w+)*)\}\}([\s\S]*?)\{\{\/\1\}\}/g,
+          (m, k, inner) =>
+            !gv(data, k) ? substituteVars(inner, data, d + 1) : "",
+        );
+        html = html.replace(/\{\{\{\s*(\w+(?:\.\w+)*)\s*\}\}\}/g, (m, k) => {
+          var v = gv(data, k);
+          return v !== undefined ? String(v) : m;
+        });
+        html = html.replace(/\{\{\s*(\w+(?:\.\w+)*)\s*\}\}/g, (m, k) => {
+          var v = gv(data, k);
+          return v !== undefined ? String(v) : m;
+        });
+        return html;
+      }
+      function gv(o, p) {
+        return p
+          .split(".")
+          .reduce((a, k) => (a && a[k] !== undefined ? a[k] : undefined), o);
+      }
+
+      function updateSaveStatus(s) {
+        var el = document.getElementById("save-status");
+        el.className = "save-status " + s;
+        el.textContent =
+          s === "saving" ? "⏳" : s === "saved" ? "✅ Salvo" : "";
+      }
+      function showToast(msg, type) {
+        var t = document.getElementById("toast");
+        t.textContent = msg;
+        t.className =
+          "toast show" +
+          (type === "error" ? " error" : type === "info" ? " info" : "");
+        setTimeout(() => (t.className = "toast"), 3000);
+      }
+
+      document.addEventListener("keydown", (e) => {
+        if ((e.metaKey || e.ctrlKey) && e.key === "s") {
+          e.preventDefault();
+          saveTemplate();
+        }
+      });
+      document
+        .getElementById("code-editor")
+        .addEventListener("input", function () {
+          isDirty = true;
+          clearTimeout(window._pt);
+          window._pt = setTimeout(refreshPreview, 500);
+        });
+      document
+        .getElementById("code-editor")
+        .addEventListener("keydown", function (e) {
+          if (e.key === "Tab") {
+            e.preventDefault();
+            var s = e.target.selectionStart;
+            e.target.value =
+              e.target.value.substring(0, s) +
+              "  " +
+              e.target.value.substring(e.target.selectionEnd);
+            e.target.selectionStart = e.target.selectionEnd = s + 2;
+          }
+        });
+
+      init();
+    </script>
+  </body>
+</html>
