@@ -134,7 +134,7 @@ function refreshPreview() {
       var b = iframe.contentDocument.body;
       if (b) {
         iframe.style.height = '10px'; // reset briefly to measure shrink
-        iframe.style.height = Math.max(400, b.scrollHeight) + 'px';
+        iframe.style.height = Math.max(400, b.scrollHeight + 20) + 'px';
       }
     } catch(e){}
   };

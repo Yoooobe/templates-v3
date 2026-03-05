@@ -256,7 +256,7 @@
               </div>
             </div>
             <div class="preview-frame-wrapper">
-              <iframe id="preview-frame" sandbox="allow-same-origin"></iframe>
+              <iframe id="preview-frame" sandbox="allow-same-origin" scrolling="no"></iframe>
             </div>
           </div>
         </div>
@@ -935,7 +935,7 @@
         frame.onload = function() {
           if (frame.contentWindow && frame.contentWindow.document && frame.contentWindow.document.body) {
             frame.style.height = "10px"; // reset briefly to measure shrink
-            frame.style.height = frame.contentWindow.document.body.scrollHeight + "px";
+            frame.style.height = (frame.contentWindow.document.body.scrollHeight + 20) + "px";
           }
         };
         frame.srcdoc = html;
