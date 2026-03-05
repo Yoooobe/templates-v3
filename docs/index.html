@@ -13,10 +13,7 @@
       rel="stylesheet"
     />
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <script
-      src="https://cdn.tiny.cloud/1/6kd71fdfbgaq4hzkp1fcyh1or8e4cpdv1a7vk3oq10gdxrtm/tinymce/7/tinymce.min.js"
-      referrerpolicy="origin"
-    ></script>
+    <script src="https://cdn.jsdelivr.net/npm/tinymce@7/tinymce.min.js"></script>
     <link rel="stylesheet" href="styles.css" />
     <style>
       .config-modal {
@@ -705,12 +702,17 @@
         document.getElementById("config-modal").classList.remove("show");
       }
       function saveConfig() {
-        localStorage.setItem(
-          "pm_token",
-          document.getElementById("cfg-token").value.trim(),
-        );
+        var token = document.getElementById("cfg-token").value.trim();
+        try {
+          localStorage.setItem("pm_token", token);
+          console.log("Token salvo:", token ? token.substring(0,8)+"..." : "(vazio)");
+        } catch(e) {
+          console.error("Erro ao salvar token:", e);
+          showToast("❌ Erro ao salvar token: " + e.message, "error");
+          return;
+        }
         hideConfig();
-        showToast("⚙️ Token salvo!");
+        showToast("⚙️ Token salvo! Verificando Postmark...");
         checkPostmarkStatus();
       }
 
@@ -718,6 +720,8 @@
         var token = getPostmarkToken();
         if (!token)
           throw new Error("Configure o Postmark token primeiro (⚙️ Config)");
+        var url = "https://api.postmarkapp.com" + endpoint;
+        console.log("Postmark →", method, url);
         var opts = {
           method,
           headers: {
@@ -727,10 +731,19 @@
           },
         };
         if (body) opts.body = JSON.stringify(body);
-        var r = await fetch("https://api.postmarkapp.com" + endpoint, opts);
-        var d = await r.json();
-        if (!r.ok) throw new Error(d.Message || "Postmark error");
-        return d;
+        try {
+          var r = await fetch(url, opts);
+          var d = await r.json();
+          if (!r.ok) {
+            console.error("Postmark error:", r.status, d);
+            throw new Error(d.Message || "Postmark error " + r.status);
+          }
+          console.log("Postmark ✅", method, endpoint, "→", r.status);
+          return d;
+        } catch(e) {
+          console.error("Postmark request failed:", e);
+          throw e;
+        }
       }
 
       function init() {
