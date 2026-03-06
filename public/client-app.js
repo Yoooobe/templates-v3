@@ -190,28 +190,37 @@ function setupEditor(html) {
   // Find Text Nodes that we can edit
   editableNodes = [];
   textInputsContainer.innerHTML = '';
-
-  // We look for block elements and spans that contain direct text
-  const textElements = currentDoc.querySelectorAll('p, h1, h2, h3, h4, span, div, td, a');
-  
   let fieldIndex = 0;
-  textElements.forEach(el => {
-    // Only process elements that contain direct text and don't contain other complex block elements
-    // Simplification: Check child nodes for text nodes with actual content
-    let hasDirectText = false;
-    let textContent = '';
-    
-    // Check if element has only text and maybe a <br> or <b>
-    if (el.children.length === 0 || el.innerText) {
-      const text = el.textContent.trim();
-      // Skip very short text or pure symbols
-      if (text.length > 2 && isValidEditableText(text)) {
-        // Build input
-        buildTextInput(el, text, fieldIndex);
-        fieldIndex++;
-      }
+
+  function findEditableBlocks(node) {
+    if (node.nodeType !== Node.ELEMENT_NODE) return;
+    if (['SCRIPT', 'STYLE', 'NOSCRIPT', 'IFRAME', 'SVG', 'PATH'].includes(node.tagName)) return;
+
+    const inlineTags = ['A', 'B', 'STRONG', 'I', 'EM', 'SPAN', 'BR', 'IMG', 'FONT', 'U', 'S', 'STRIKE', 'SUP', 'SUB'];
+    let hasBlockChild = false;
+    for (let i = 0; i < node.children.length; i++) {
+        if (!inlineTags.includes(node.children[i].tagName)) {
+            hasBlockChild = true;
+            break;
+        }
     }
-  });
+
+    if (hasBlockChild) {
+        for (let i = 0; i < node.children.length; i++) {
+            findEditableBlocks(node.children[i]);
+        }
+    } else {
+        let pureText = node.textContent.trim();
+        let htmlContent = node.innerHTML.trim();
+        
+        if (isValidEditableText(pureText)) {
+            buildTextInput(node, htmlContent, fieldIndex);
+            fieldIndex++;
+        }
+    }
+  }
+
+  findEditableBlocks(currentDoc.body);
 
   if (fieldIndex === 0) {
     textInputsContainer.innerHTML = '<p class="section-desc">Nenhum texto editável encontrado neste template.</p>';
@@ -225,11 +234,15 @@ function setupEditor(html) {
 
 // Avoid editing style tags, script tags, or strings that are 100% variables
 function isValidEditableText(text) {
-  if (text.startsWith('{{') && text.endsWith('}}') && !text.includes(' ') && text.length < 20) return false;
+  const withoutVars = text.replace(/{{[^}]+}}/g, '').trim();
+  const alphanumeric = withoutVars.replace(/[^a-zA-Z0-9]/g, '');
+  if (alphanumeric.length < 3) return false;
+  
+  if (text.includes('background-color') || text.includes('font-weight') || text.includes('font-family')) return false;
   return true;
 }
 
-function buildTextInput(element, initialText, index) {
+function buildTextInput(element, initialHtml, index) {
   // Create wrapper
   const group = document.createElement('div');
   group.className = 'text-input-group';
@@ -238,16 +251,16 @@ function buildTextInput(element, initialText, index) {
   label.textContent = `Bloco de Texto ${index + 1}`;
   
   const textarea = document.createElement('textarea');
-  textarea.value = initialText;
+  textarea.value = initialHtml;
 
   // Check if it contains Handlebars variables
-  if (initialText.includes('{{') && initialText.includes('}}')) {
+  if (initialHtml.includes('{{') && initialHtml.includes('}}')) {
     label.innerHTML += ' <span style="color:#ef4444;" title="Contém variáveis dinâmicas">⚠️</span>';
-    textarea.placeholder = "Atenção: Mantenha as chaves {{ }} intactas.";
+    textarea.placeholder = "Atenção: Não modifique as chaves {{ }} presentes no texto.";
   }
 
   textarea.addEventListener('input', (e) => {
-    element.textContent = e.target.value; // Simplistic approach: replaces all innerHTML with text
+    element.innerHTML = e.target.value; 
     updatePreview();
   });
 
@@ -264,9 +277,9 @@ let firstImageEl = null;
 let originalImageSrc = '';
 
 function setupImageEditor() {
-  // Find the first main image (exclude obvious logos if possible by checking src)
+  // Target the logo explicitly, or fallback to the first image in the document
   const images = Array.from(currentDoc.querySelectorAll('img'));
-  firstImageEl = images.find(img => !img.src.includes('logo'));
+  firstImageEl = images.find(img => img.src && img.src.includes('logo'));
   
   if (!firstImageEl && images.length > 0) {
     firstImageEl = images[0]; // Fallback to first
