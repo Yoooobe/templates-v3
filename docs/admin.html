@@ -249,9 +249,9 @@
     tbody.innerHTML = '';
     
     if (clients.length === 0) {
-      emptyState.style.display = 'block';
+      emptyState.classList.remove('hidden');
     } else {
-      emptyState.style.display = 'none';
+      emptyState.classList.add('hidden');
       clients.forEach((client) => {
         const tr = document.createElement('tr');
         tr.innerHTML = `

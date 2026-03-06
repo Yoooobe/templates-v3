@@ -49,19 +49,19 @@ async function init() {
 }
 
 function showLogin() {
-  loginScreen.style.display = 'flex';
-  appContainer.style.display = 'none';
+  loginScreen.classList.remove('hidden');
+  appContainer.classList.add('hidden');
 }
 
 async function showApp() {
-  loginScreen.style.display = 'none';
-  appContainer.style.display = 'flex';
+  loginScreen.classList.add('hidden');
+  appContainer.classList.remove('hidden');
   companyNameDisplay.textContent = currentUser.companyName;
   
   if (currentUser.pmToken) {
-    btnSyncPm.style.display = 'block';
+    btnSyncPm.classList.remove('hidden');
   } else {
-    btnSyncPm.style.display = 'none';
+    btnSyncPm.classList.add('hidden');
   }
 
   const defaultHtml = document.getElementById('template-list').innerHTML;
@@ -99,8 +99,8 @@ async function saveClientData() {
 function showToast(msg) {
   const toast = document.getElementById('toast');
   toast.textContent = msg;
-  toast.style.display = 'block';
-  setTimeout(() => { toast.style.display = 'none'; }, 3000);
+  toast.classList.remove('hidden');
+  setTimeout(() => { toast.classList.add('hidden'); }, 3000);
 }
 
 // --- Login Logic ---
@@ -112,11 +112,11 @@ loginForm.addEventListener('submit', (e) => {
   const user = clients.find(c => c.username === userStr && c.password === passStr);
   if (user) {
     sessionStorage.setItem('v3_current_client', user.username);
-    loginError.style.display = 'none';
+    loginError.classList.add('hidden');
     login(user);
   } else {
     loginError.textContent = 'Usuário ou senha inválidos. Fale com seu administrador.';
-    loginError.style.display = 'block';
+    loginError.classList.remove('hidden');
   }
 });
 
@@ -125,7 +125,7 @@ function login(user) {
   showApp();
 }
 
-function logout() {
+window.logout = function() {
   sessionStorage.removeItem('v3_current_client');
   currentUser = null;
   currentTemplate = null;
@@ -169,9 +169,9 @@ function selectTemplate(tpl, element) {
 
   currentTemplate = tpl;
   previewTitle.textContent = tpl.name;
-  emptyState.style.display = 'none';
-  previewFrame.style.display = 'block';
-  editorControls.style.display = 'flex';
+  emptyState.classList.add('hidden');
+  previewFrame.classList.remove('hidden');
+  editorControls.classList.remove('hidden');
 
   // Load custom HTML if previously saved by this client, otherwise use base HTML
   const alias = getTemplateAlias(tpl);
@@ -281,15 +281,15 @@ function setupImageEditor() {
     if (originalImageSrc && !originalImageSrc.startsWith('http')) {
       // It might be a base64 or placeholder
       imgThumbnail.style.backgroundImage = `url('${originalImageSrc}')`;
-      imgThumbnail.style.display = 'block';
-      btnRemoveImg.style.display = 'inline-block';
+      imgThumbnail.classList.remove('hidden');
+      btnRemoveImg.classList.remove('hidden');
     } else if (originalImageSrc) {
       imgThumbnail.style.backgroundImage = `url('${originalImageSrc}')`;
-      imgThumbnail.style.display = 'block';
-      btnRemoveImg.style.display = 'inline-block';
+      imgThumbnail.classList.remove('hidden');
+      btnRemoveImg.classList.remove('hidden');
     }
   } else {
-    document.querySelector('.image-upload-box').style.display = 'none';
+    document.querySelector('.image-upload-box').classList.add('hidden');
   }
 }
 
@@ -301,8 +301,8 @@ imgInput.addEventListener('change', (e) => {
       const base64 = event.target.result;
       firstImageEl.src = base64;
       imgThumbnail.style.backgroundImage = `url('${base64}')`;
-      imgThumbnail.style.display = 'block';
-      btnRemoveImg.style.display = 'inline-block';
+      imgThumbnail.classList.remove('hidden');
+      btnRemoveImg.classList.remove('hidden');
       updatePreview();
     };
     reader.readAsDataURL(file);
@@ -312,8 +312,8 @@ imgInput.addEventListener('change', (e) => {
 window.removeImage = function() {
   if (firstImageEl) {
     firstImageEl.src = 'https://via.placeholder.com/600x200?text=Imagem+Removida';
-    imgThumbnail.style.display = 'none';
-    btnRemoveImg.style.display = 'none';
+    imgThumbnail.classList.add('hidden');
+    btnRemoveImg.classList.add('hidden');
     imgInput.value = '';
     updatePreview();
   }
