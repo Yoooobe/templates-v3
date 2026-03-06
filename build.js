@@ -87,6 +87,24 @@ fs.copyFileSync(
   path.join(DOCS, "index.html"),
 );
 
+// 5.5 Copy Client Portal files
+const portalFiles = [
+  "admin.html",
+  "client.html",
+  "client-app.js",
+  "client-styles.css",
+  "firebase-config.js"
+];
+
+for (const pFile of portalFiles) {
+  if (fs.existsSync(path.join(ROOT, "public", pFile))) {
+    fs.copyFileSync(
+      path.join(ROOT, "public", pFile),
+      path.join(DOCS, pFile)
+    );
+  }
+}
+
 // 6. Write static app.js (copy for reference, main logic is inline in index.html)
 var appJs = fs.readFileSync(path.join(ROOT, "public", "app.js"), "utf-8");
 fs.writeFileSync(path.join(DOCS, "app-static.js"), appJs);

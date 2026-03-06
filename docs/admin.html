@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Templates V3 – Admin Portal</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0f172a;
+      --panel-bg: #1e293b;
+      --border: #334155;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --primary: #6366f1;
+      --primary-hover: #4f46e5;
+      --danger: #ef4444;
+      --success: #22c55e;
+    }
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      display: flex;
+      justify-content: center;
+      padding: 40px 20px;
+    }
+    .container {
+      width: 100%;
+      max-width: 800px;
+    }
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 20px;
+    }
+    h1 {
+      font-size: 24px;
+      margin: 0;
+    }
+    .nav-links a {
+      color: var(--primary);
+      text-decoration: none;
+      font-size: 14px;
+      margin-left: 15px;
+    }
+    .nav-links a:hover {
+      text-decoration: underline;
+    }
+    .panel {
+      background: var(--panel-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 24px;
+    }
+    .panel h2 {
+      margin-top: 0;
+      font-size: 18px;
+      margin-bottom: 16px;
+    }
+    .form-group {
+      margin-bottom: 16px;
+    }
+    .form-group label {
+      display: block;
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+    .form-group input {
+      width: 100%;
+      padding: 10px 14px;
+      background: rgba(0,0,0,0.2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 14px;
+      box-sizing: border-box;
+    }
+    .form-group input:focus {
+      outline: none;
+      border-color: var(--primary);
+    }
+    .btn {
+      padding: 10px 20px;
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-family: 'Poppins', sans-serif;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .btn:hover {
+      background: var(--primary-hover);
+    }
+    .btn.btn-danger {
+      background: rgba(239, 68, 68, 0.1);
+      color: var(--danger);
+      border: 1px solid rgba(239, 68, 68, 0.2);
+    }
+    .btn.btn-danger:hover {
+      background: rgba(239, 68, 68, 0.2);
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+    th, td {
+      padding: 12px;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+      font-size: 14px;
+    }
+    th {
+      color: var(--text-muted);
+      font-weight: 500;
+      font-size: 13px;
+    }
+    .empty-state {
+      text-align: center;
+      padding: 40px 0;
+      color: var(--text-muted);
+      font-style: italic;
+    }
+    #toast {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: var(--panel-bg);
+      border: 1px solid var(--primary);
+      padding: 12px 20px;
+      border-radius: 8px;
+      font-size: 14px;
+      display: none;
+      z-index: 100;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    }
+    .flex-row {
+      display: flex;
+      gap: 16px;
+    }
+    .flex-1 {
+      flex: 1;
+    }
+    .hidden {
+      display: none !important;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <div class="header">
+    <h1>⚙️ Admin Portal - Clientes</h1>
+    <div class="nav-links">
+      <a href="client.html" target="_blank">Acessar Portal do Cliente</a>
+      <a href="index.html">Voltar ao Editor</a>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h2>Criar Novo Cliente</h2>
+    <form id="create-client-form">
+      <div class="form-group">
+        <label>Nome da Empresa</label>
+        <input type="text" id="company-name" required placeholder="Ex: Acme Corp">
+      </div>
+      <div class="flex-row">
+        <div class="form-group flex-1">
+          <label>Usuário (Login)</label>
+          <input type="text" id="username" required placeholder="Ex: acme">
+        </div>
+        <div class="form-group flex-1">
+          <label>Senha</label>
+          <input type="text" id="password" required placeholder="Ex: 123456">
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Postmark Server Token (Opcional - Específico do Cliente)</label>
+        <input type="text" id="pm-token" placeholder="Se vazio, o cliente não enviará direto via UI">
+      </div>
+      <button type="submit" class="btn">Criar Cliente</button>
+    </form>
+  </div>
+
+  <div class="panel">
+    <h2>Clientes Cadastrados</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Empresa</th>
+          <th>Usuário</th>
+          <th>Senha</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <tbody id="clients-table-body">
+        <!-- Clientes renderizados aqui -->
+      </tbody>
+    </table>
+    <div id="empty-clients" class="empty-state hidden">
+      Nenhum cliente cadastrado ainda.
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script type="module">
+  import { db, collection, getDocs, setDoc, doc, deleteDoc } from './firebase-config.js';
+
+  let clients = [];
+
+  async function loadClients() {
+    clients = [];
+    try {
+      const querySnapshot = await getDocs(collection(db, "clients"));
+      querySnapshot.forEach((document) => {
+        clients.push({ id: document.id, ...document.data() });
+      });
+      renderClients();
+    } catch (error) {
+      console.error("Erro ao carregar clientes do Firebase:", error);
+      showToast("Erro ao carregar clientes.");
+    }
+  }
+
+  function showToast(msg) {
+    const toast = document.getElementById('toast');
+    toast.textContent = msg;
+    toast.style.display = 'block';
+    setTimeout(() => { toast.style.display = 'none'; }, 3000);
+  }
+
+  function renderClients() {
+    const tbody = document.getElementById('clients-table-body');
+    const emptyState = document.getElementById('empty-clients');
+    
+    tbody.innerHTML = '';
+    
+    if (clients.length === 0) {
+      emptyState.style.display = 'block';
+    } else {
+      emptyState.style.display = 'none';
+      clients.forEach((client) => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td><strong>${client.companyName}</strong></td>
+          <td><code>${client.username}</code></td>
+          <td><code>${client.password}</code></td>
+          <td>
+            <button class="btn btn-danger" style="padding: 6px 12px; font-size: 12px;" onclick="window.deleteClient('${client.id}')">Excluir</button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+  }
+
+  window.deleteClient = async function(id) {
+    const client = clients.find(c => c.id === id);
+    if (confirm(`Tem certeza que deseja excluir o cliente ${client.companyName}? Dados de personalização também serão apagados.`)) {
+      try {
+        await deleteDoc(doc(db, "clients", id));
+        showToast('Cliente excluído com sucesso!');
+        loadClients();
+      } catch (error) {
+        console.error("Erro ao excluir cliente:", error);
+        alert("Erro ao excluir cliente.");
+      }
+    }
+  }
+
+  document.getElementById('create-client-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const companyName = document.getElementById('company-name').value.trim();
+    const username = document.getElementById('username').value.trim();
+    const password = document.getElementById('password').value.trim();
+    const pmToken = document.getElementById('pm-token').value.trim();
+
+    if (clients.find(c => c.username === username)) {
+      alert('Já existe um cliente com este nome de usuário!');
+      return;
+    }
+
+    const newClientId = 'client_' + Date.now();
+    const newClientData = {
+      companyName,
+      username,
+      password,
+      pmToken,
+      createdAt: new Date().toISOString()
+    };
+
+    const submitBtn = e.target.querySelector('button[type="submit"]');
+    submitBtn.textContent = 'Adicionando...';
+    submitBtn.disabled = true;
+
+    try {
+      await setDoc(doc(db, "clients", newClientId), newClientData);
+      document.getElementById('create-client-form').reset();
+      showToast('Cliente cadastrado com sucesso!');
+      loadClients();
+    } catch (error) {
+      console.error("Erro ao adicionar cliente:", error);
+      alert("Erro ao adicionar cliente. Você testou os Firestore Rules?");
+    } finally {
+      submitBtn.textContent = 'Criar Cliente';
+      submitBtn.disabled = false;
+    }
+  });
+
+  loadClients();
+</script>
+</body>
+</html>
