@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Portal do Cliente – Yoobe</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="client-styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+</head>
+<body>
+
+  <!-- Login Screen -->
+  <div id="login-screen" class="login-screen hidden">
+    <div class="login-box">
+      <h2>Acesso ao Portal</h2>
+      <p>Personalize os templates da sua empresa.</p>
+      <form id="login-form">
+        <div class="form-group">
+          <label>Usuário</label>
+          <input type="text" id="login-user" required placeholder="Seu usuário">
+        </div>
+        <div class="form-group">
+          <label>Senha</label>
+          <input type="password" id="login-pass" required placeholder="Sua senha">
+        </div>
+        <button type="submit" class="btn-primary">Entrar</button>
+      </form>
+      <div id="login-error" class="login-error"></div>
+    </div>
+  </div>
+
+  <!-- Main App -->
+  <div id="app-container" class="app-container hidden">
+    <!-- Top Header -->
+    <header class="app-header">
+      <div class="logo">
+        <span class="emoji">🎨</span> Portal do Cliente
+      </div>
+      <div class="user-info">
+        <span id="company-name-display" class="company-badge"></span>
+        <button class="btn-outline" onclick="logout()">Sair</button>
+      </div>
+    </header>
+
+    <div class="workspace">
+      <!-- Left Sidebar: Templates -->
+      <aside class="left-sidebar">
+        <h3>Templates Disponíveis</h3>
+        <div id="template-list" class="template-list">
+          <!-- Populated by JS -->
+        </div>
+      </aside>
+
+      <!-- Center: Preview -->
+      <main class="preview-area">
+        <div class="preview-toolbar">
+          <span class="preview-title" id="preview-title">Nenhum template selecionado</span>
+          <div class="device-toggles">
+            <button class="device-btn" onclick="setDevice('mobile')">📱</button>
+            <button class="device-btn active" onclick="setDevice('desktop')">🖥️</button>
+          </div>
+        </div>
+        <div class="canvas-wrapper">
+          <div id="empty-state" class="empty-state">
+            <span style="font-size:40px;opacity:0.5;display:block;margin-bottom:10px;">📫</span>
+            Selecione um template na barra lateral para começar a edição.
+          </div>
+          <iframe id="preview-frame" sandbox="allow-same-origin" title="Template Preview" class="hidden"></iframe>
+        </div>
+      </main>
+
+      <!-- Right Sidebar: Controls -->
+      <aside class="right-sidebar">
+        <div class="controls-header">
+          <h3>✍️ Editor</h3>
+        </div>
+        
+        <div id="editor-controls" class="editor-controls hidden">
+          
+          <!-- Tom de Voz / Textos -->
+          <div class="control-section">
+            <h4>🗣️ Tom de Voz (Textos)</h4>
+            <p class="section-desc">Altere os blocos de texto do template. Variáveis dinâmicas como {{nome}} não podem ser editadas aqui.</p>
+            <div id="text-inputs-container" class="inputs-container">
+              <!-- Textareas geradas dinamicamente -->
+            </div>
+          </div>
+
+          <!-- Imagens -->
+          <div class="control-section">
+            <h4>🖼️ Imagem do Template</h4>
+            <p class="section-desc">Se o template possuir uma imagem principal, você pode substituí-la abaixo.</p>
+            <div class="image-upload-box">
+              <input type="file" id="image-upload" accept="image/*" class="file-input">
+              <label for="image-upload" class="upload-label">
+                <span>📁 Escolher Imagem</span>
+              </label>
+              <div id="image-preview-thumbnail" class="image-thumbnail hidden"></div>
+              <button class="btn-outline btn-small btn-remove-img hidden margin-top-8" id="btn-remove-img" onclick="removeImage()">Remover Imagem</button>
+            </div>
+          </div>
+
+          <!-- Save / Sync Row -->
+          <div class="actions-row">
+            <button class="btn-primary" onclick="saveTemplateToClient()">💾 Salvar Alterações</button>
+            <button class="btn-secondary hidden" id="btn-sync-pm" onclick="syncToPostmark()">☁️ Enviar Postmark</button>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <div id="toast" class="toast"></div>
+
+  <!-- Data and Logic -->
+  <script src="data.js"></script>
+  <script type="module" src="client-app.js"></script>
+</body>
+</html>
