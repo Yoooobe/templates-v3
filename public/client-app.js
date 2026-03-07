@@ -4,7 +4,7 @@ let clients = [];
 let currentUser = null;
 
 let templates = window.__TEMPLATES_DATA__ || [];
-let layoutHtml = window.__LAYOUT_HTML__ || "<!-- CONTENT -->";
+let layoutHtml = (window.__LAYOUT_HTML__ || "<!-- CONTENT -->").replace('{{{@content}}}', '<!-- CONTENT -->');
 let currentTemplate = null;
 let currentCustomData = {}; // Stores modifications per template: { 'v3-welcome': '<html>...', ... }
 
@@ -21,7 +21,6 @@ const previewFrame = document.getElementById('preview-frame');
 const previewTitle = document.getElementById('preview-title');
 const emptyState = document.getElementById('empty-state');
 const editorControls = document.getElementById('editor-controls');
-const textInputsContainer = document.getElementById('text-inputs-container');
 const companyNameDisplay = document.getElementById('company-name-display');
 const btnSyncPm = document.getElementById('btn-sync-pm');
 
@@ -186,11 +185,6 @@ function setupEditor(html) {
   // Parse HTML
   const parser = new DOMParser();
   currentDoc = parser.parseFromString(html, 'text/html');
-  
-  // Find Text Nodes that we can edit
-  editableNodes = [];
-  textInputsContainer.innerHTML = '';
-  let fieldIndex = 0;
 
   function findEditableBlocks(node) {
     if (node.nodeType !== Node.ELEMENT_NODE) return;
@@ -211,20 +205,14 @@ function setupEditor(html) {
         }
     } else {
         let pureText = node.textContent.trim();
-        let htmlContent = node.innerHTML.trim();
         
         if (isValidEditableText(pureText)) {
-            buildTextInput(node, htmlContent, fieldIndex);
-            fieldIndex++;
+            makeNodeEditable(node);
         }
     }
   }
 
   findEditableBlocks(currentDoc.body);
-
-  if (fieldIndex === 0) {
-    textInputsContainer.innerHTML = '<p class="section-desc">Nenhum texto editável encontrado neste template.</p>';
-  }
 
   // Find images
   setupImageEditor();
@@ -242,31 +230,13 @@ function isValidEditableText(text) {
   return true;
 }
 
-function buildTextInput(element, initialHtml, index) {
-  // Create wrapper
-  const group = document.createElement('div');
-  group.className = 'text-input-group';
-  
-  const label = document.createElement('label');
-  label.textContent = `Bloco de Texto ${index + 1}`;
-  
-  const textarea = document.createElement('textarea');
-  textarea.value = initialHtml;
-
-  // Check if it contains Handlebars variables
-  if (initialHtml.includes('{{') && initialHtml.includes('}}')) {
-    label.innerHTML += ' <span style="color:#ef4444;" title="Contém variáveis dinâmicas">⚠️</span>';
-    textarea.placeholder = "Atenção: Não modifique as chaves {{ }} presentes no texto.";
+function makeNodeEditable(node) {
+  // Protect Handlebars variables like {{name}}
+  if (node.innerHTML.includes('{{')) {
+    node.innerHTML = node.innerHTML.replace(/({{[^}]+}})/g, '<span contenteditable="false" class="readonly-variable" style="user-select:none;background-color:#f1f5f9;color:#64748b;padding:0 4px;border-radius:4px;font-family:monospace;font-size:0.9em;pointer-events:none;">$1</span>');
   }
-
-  textarea.addEventListener('input', (e) => {
-    element.innerHTML = e.target.value; 
-    updatePreview();
-  });
-
-  group.appendChild(label);
-  group.appendChild(textarea);
-  textInputsContainer.appendChild(group);
+  node.setAttribute('contenteditable', 'true');
+  node.classList.add('v3-editable-node');
 }
 
 // --- Image Editor ---
@@ -340,13 +310,34 @@ function updatePreview() {
   // Extract body HTML from the parser
   const modifiedHtml = currentDoc.body.innerHTML;
   
-  // Wrap in layout
-  const finalHtml = layoutHtml.replace('<!-- CONTENT -->', modifiedHtml);
+  // Wrap in layout and identifiable div
+  const wrappedContent = `<div id="v3-template-content">${modifiedHtml}</div>`;
+  const finalHtml = layoutHtml.replace('<!-- CONTENT -->', wrappedContent);
 
   // Render to iframe
   const doc = previewFrame.contentWindow.document;
   doc.open();
   doc.write(finalHtml);
+  
+  // Inject editor styles into iframe
+  const style = doc.createElement('style');
+  style.innerHTML = `
+    .v3-editable-node {
+      outline: none;
+      transition: outline 0.2s, background-color 0.2s;
+    }
+    .v3-editable-node:hover {
+      outline: 2px dashed #4f46e5;
+      background-color: rgba(79, 70, 229, 0.05);
+      cursor: text;
+    }
+    .v3-editable-node:focus {
+      outline: 2px solid #4f46e5;
+      background-color: rgba(79, 70, 229, 0.05);
+    }
+  `;
+  doc.head.appendChild(style);
+  
   doc.close();
 }
 
@@ -364,14 +355,44 @@ window.setDevice = function(mode) {
 window.saveTemplateToClient = async function() {
   if (!currentDoc || !currentTemplate) return;
   
-  const modifiedHtml = currentDoc.body.innerHTML;
-  const alias = getTemplateAlias(currentTemplate);
-  
   const btn = document.querySelector('.btn-primary[onclick="saveTemplateToClient()"]');
   if (btn) btn.textContent = '💾 Salvando...';
 
+  // Read from the iframe directly to capture inline edits
+  const doc = previewFrame.contentWindow.document;
+  const contentWrapper = doc.getElementById('v3-template-content');
+  
+  if (!contentWrapper) {
+    if (btn) btn.textContent = '💾 Salvar Alterações';
+    return;
+  }
+  
+  // Clone to strip editor attributes
+  const cloned = contentWrapper.cloneNode(true);
+  
+  // Remove contenteditable
+  const editables = cloned.querySelectorAll('.v3-editable-node');
+  editables.forEach(el => {
+     el.removeAttribute('contenteditable');
+     el.classList.remove('v3-editable-node');
+     if (el.classList.length === 0) el.removeAttribute('class');
+  });
+  
+  // Restore variables
+  const vars = cloned.querySelectorAll('.readonly-variable');
+  vars.forEach(v => {
+     v.replaceWith(v.textContent); // Replace span with just the text
+  });
+
+  const modifiedHtml = cloned.innerHTML;
+  const alias = getTemplateAlias(currentTemplate);
+
   currentCustomData[alias] = modifiedHtml;
   await saveClientData();
+  
+  // Sync changes back to currentDoc in case they keep editing without reloading
+  currentDoc.body.innerHTML = modifiedHtml;
+  setupEditor(modifiedHtml); // Re-apply editable attributes for further editing
   
   if (btn) btn.textContent = '💾 Salvar Alterações';
 }
