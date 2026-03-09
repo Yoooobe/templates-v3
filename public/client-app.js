@@ -231,9 +231,12 @@ function isValidEditableText(text) {
 }
 
 function makeNodeEditable(node) {
-  // Protect Handlebars variables like {{name}}
+  // Protect Handlebars variables like {{name}} and make them clean badges
   if (node.innerHTML.includes('{{')) {
-    node.innerHTML = node.innerHTML.replace(/({{[^}]+}})/g, '<span contenteditable="false" class="readonly-variable" style="user-select:none;background-color:#f1f5f9;color:#64748b;padding:0 4px;border-radius:4px;font-family:monospace;font-size:0.9em;pointer-events:none;">$1</span>');
+    node.innerHTML = node.innerHTML.replace(/({{\s*([^}]+)\s*}})/g, (match, fullMatch, varName) => {
+      let cleanName = varName.replace(/[{}]/g, '').trim().split('.').pop(); // e.g. tenant.name -> name
+      return `<span contenteditable="false" class="readonly-variable" data-original-var="${fullMatch}" style="user-select:none;background-color:#e2e8f0;color:#334155;padding:2px 8px;border-radius:12px;font-family:sans-serif;font-size:11px;font-weight:600;pointer-events:none;margin:0 4px;display:inline-block;vertical-align:middle;text-transform:uppercase;letter-spacing:0.5px;">${cleanName}</span>`;
+    });
   }
   node.setAttribute('contenteditable', 'true');
   node.classList.add('v3-editable-node');
@@ -312,7 +315,10 @@ function updatePreview() {
   
   // Wrap in layout and identifiable div
   const wrappedContent = `<div id="v3-template-content">${modifiedHtml}</div>`;
-  const finalHtml = layoutHtml.replace('<!-- CONTENT -->', wrappedContent);
+  let finalHtml = layoutHtml.replace('<!-- CONTENT -->', wrappedContent);
+
+  // Strip Handlebars logic tags (blocks) from the preview so they don't break the layout visually
+  finalHtml = finalHtml.replace(/{{[#/^][^}]+}}/g, '');
 
   // Render to iframe
   const doc = previewFrame.contentWindow.document;
@@ -381,7 +387,12 @@ window.saveTemplateToClient = async function() {
   // Restore variables
   const vars = cloned.querySelectorAll('.readonly-variable');
   vars.forEach(v => {
-     v.replaceWith(v.textContent); // Replace span with just the text
+     const originalVar = v.getAttribute('data-original-var');
+     if (originalVar) {
+       v.replaceWith(originalVar);
+     } else {
+       v.replaceWith(v.textContent);
+     }
   });
 
   const modifiedHtml = cloned.innerHTML;
