@@ -207,7 +207,11 @@ function setupEditor(html) {
         let pureText = node.textContent.trim();
         
         if (isValidEditableText(pureText)) {
-            makeNodeEditable(node);
+            const allowedTags = ['H1', 'H2', 'H3', 'H4', 'H5', 'H6', 'P', 'SPAN', 'DIV'];
+            // Never make logic-heavy transactional tables or links directly editable
+            if (allowedTags.includes(node.tagName)) {
+               makeNodeEditable(node);
+            }
         }
     }
   }
@@ -222,6 +226,8 @@ function setupEditor(html) {
 
 // Avoid editing style tags, script tags, or strings that are 100% variables
 function isValidEditableText(text) {
+  if (text.includes('{{#') || text.includes('{{/') || text.includes('{{^')) return false; // Contains logic blocks = do not edit
+
   if (text.includes('{{') && text.includes('}}')) return true; // Allow variable blocks
 
   const withoutVars = text.replace(/{{[^}]+}}/g, '').trim();
@@ -233,26 +239,49 @@ function isValidEditableText(text) {
 }
 
 function makeNodeEditable(node) {
-  // Protect Handlebars variables like {{name}} and evaluate them with real sample data
-  if (node.innerHTML.includes('{{')) {
-    node.innerHTML = node.innerHTML.replace(/({{\s*([^}]+)\s*}})/g, (match, fullMatch, varName) => {
-      // Compile the single variable bracket with Handlebars to see what it becomes
-      let evaluatedText = '';
-      try {
-        const template = Handlebars.compile(fullMatch);
-        evaluatedText = template(window.__SAMPLE_DATA__);
-      } catch (e) {
-        evaluatedText = varName.trim(); // fallback
+  // Use text node replacement to prevent HTML attribute corruption
+  const walker = document.createTreeWalker(node, NodeFilter.SHOW_TEXT, null, false);
+  const textNodes = [];
+  while (walker.nextNode()) textNodes.push(walker.currentNode);
+  
+  textNodes.forEach(textNode => {
+    if (textNode.nodeValue.includes('{{')) {
+      const matchRegex = /({{\s*[^}]+\s*}})/g;
+      const fragments = textNode.nodeValue.split(matchRegex);
+      
+      if (fragments.length > 1) {
+        const parent = textNode.parentNode;
+        fragments.forEach(frag => {
+          if (frag.match(/^{{\s*([^}]+)\s*}}$/)) {
+            let varName = frag.replace(/[{}]/g, '').trim().split('.').pop();
+            let evaluatedText = '';
+            try {
+              const template = Handlebars.compile(frag);
+              evaluatedText = template(window.__SAMPLE_DATA__);
+            } catch (e) {
+              evaluatedText = varName;
+            }
+            if (!evaluatedText || evaluatedText.trim() === '') {
+               evaluatedText = `[ ${varName} ]`;
+            }
+            
+            const span = document.createElement('span');
+            span.setAttribute('contenteditable', 'false');
+            span.className = 'readonly-variable';
+            // Escaping the Handlebars brackets so they survive Handlebars layout compilation!
+            span.setAttribute('data-original-var', `\\${frag}`); 
+            span.style.cssText = "user-select:none;pointer-events:none;display:inline-block;vertical-align:baseline;background-color:#e2e8f0;color:#334155;padding:0px 4px;border-radius:4px;font-family:sans-serif;font-size:12px;font-weight:600;margin:0 4px;";
+            span.textContent = evaluatedText;
+            parent.insertBefore(span, textNode);
+          } else if (frag.length > 0) {
+            parent.insertBefore(document.createTextNode(frag), textNode);
+          }
+        });
+        parent.removeChild(textNode);
       }
+    }
+  });
 
-      // If it evaluated to empty (e.g. missing sample data), fallback to a neat badge
-      if (!evaluatedText || evaluatedText.trim() === '') {
-         evaluatedText = `[ ${varName.replace(/[{}]/g, '').trim().split('.').pop()} ]`;
-      }
-
-      return `<span contenteditable="false" class="readonly-variable" data-original-var="${fullMatch}" style="user-select:none;pointer-events:none;display:inline-block;vertical-align:baseline;">${evaluatedText}</span>`;
-    });
-  }
   node.setAttribute('contenteditable', 'true');
   node.classList.add('v3-editable-node');
 }
