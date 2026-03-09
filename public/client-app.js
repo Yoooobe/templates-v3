@@ -174,7 +174,7 @@ function selectTemplate(tpl, element) {
 
   // Load custom HTML if previously saved by this client, otherwise use base HTML
   const alias = getTemplateAlias(tpl);
-  const baseHtml = tpl.html;
+  const baseHtml = tpl.content; // It's .content, not .html
   const rawHtmlToEdit = currentCustomData[alias] || baseHtml;
 
   setupEditor(rawHtmlToEdit);
@@ -222,9 +222,11 @@ function setupEditor(html) {
 
 // Avoid editing style tags, script tags, or strings that are 100% variables
 function isValidEditableText(text) {
+  if (text.includes('{{') && text.includes('}}')) return true; // Allow variable blocks
+
   const withoutVars = text.replace(/{{[^}]+}}/g, '').trim();
   const alphanumeric = withoutVars.replace(/[^a-zA-Z0-9]/g, '');
-  if (alphanumeric.length < 3) return false;
+  if (alphanumeric.length < 3 && !text.includes('{{')) return false;
   
   if (text.includes('background-color') || text.includes('font-weight') || text.includes('font-family')) return false;
   return true;
@@ -313,12 +315,16 @@ function updatePreview() {
   // Extract body HTML from the parser
   const modifiedHtml = currentDoc.body.innerHTML;
   
+  // Clean up layoutHtml for preview purposes (hide header/footer tags)
+  let cleanLayout = layoutHtml.replace(/{{[#/^][^}]+}}/g, ''); // Remove logic blocks
+  cleanLayout = cleanLayout.replace(/({{\s*([^}]+)\s*}})/g, (match, fullMatch, varName) => {
+      let cleanName = varName.replace(/[{}]/g, '').trim().split('.').pop();
+      return `<span style="background-color:#e2e8f0;color:#334155;padding:2px 8px;border-radius:12px;font-family:sans-serif;font-size:11px;font-weight:600;margin:0 4px;display:inline-block;text-transform:uppercase;">${cleanName}</span>`;
+  });
+
   // Wrap in layout and identifiable div
   const wrappedContent = `<div id="v3-template-content">${modifiedHtml}</div>`;
-  let finalHtml = layoutHtml.replace('<!-- CONTENT -->', wrappedContent);
-
-  // Strip Handlebars logic tags (blocks) from the preview so they don't break the layout visually
-  finalHtml = finalHtml.replace(/{{[#/^][^}]+}}/g, '');
+  let finalHtml = cleanLayout.replace('<!-- CONTENT -->', wrappedContent);
 
   // Render to iframe
   const doc = previewFrame.contentWindow.document;
