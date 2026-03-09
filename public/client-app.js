@@ -233,11 +233,24 @@ function isValidEditableText(text) {
 }
 
 function makeNodeEditable(node) {
-  // Protect Handlebars variables like {{name}} and make them clean badges
+  // Protect Handlebars variables like {{name}} and evaluate them with real sample data
   if (node.innerHTML.includes('{{')) {
     node.innerHTML = node.innerHTML.replace(/({{\s*([^}]+)\s*}})/g, (match, fullMatch, varName) => {
-      let cleanName = varName.replace(/[{}]/g, '').trim().split('.').pop(); // e.g. tenant.name -> name
-      return `<span contenteditable="false" class="readonly-variable" data-original-var="${fullMatch}" style="user-select:none;background-color:#e2e8f0;color:#334155;padding:2px 8px;border-radius:12px;font-family:sans-serif;font-size:11px;font-weight:600;pointer-events:none;margin:0 4px;display:inline-block;vertical-align:middle;text-transform:uppercase;letter-spacing:0.5px;">${cleanName}</span>`;
+      // Compile the single variable bracket with Handlebars to see what it becomes
+      let evaluatedText = '';
+      try {
+        const template = Handlebars.compile(fullMatch);
+        evaluatedText = template(window.__SAMPLE_DATA__);
+      } catch (e) {
+        evaluatedText = varName.trim(); // fallback
+      }
+
+      // If it evaluated to empty (e.g. missing sample data), fallback to a neat badge
+      if (!evaluatedText || evaluatedText.trim() === '') {
+         evaluatedText = `[ ${varName.replace(/[{}]/g, '').trim().split('.').pop()} ]`;
+      }
+
+      return `<span contenteditable="false" class="readonly-variable" data-original-var="${fullMatch}" style="user-select:none;pointer-events:none;display:inline-block;vertical-align:baseline;">${evaluatedText}</span>`;
     });
   }
   node.setAttribute('contenteditable', 'true');
@@ -315,16 +328,18 @@ function updatePreview() {
   // Extract body HTML from the parser
   const modifiedHtml = currentDoc.body.innerHTML;
   
-  // Clean up layoutHtml for preview purposes (hide header/footer tags)
-  let cleanLayout = layoutHtml.replace(/{{[#/^][^}]+}}/g, ''); // Remove logic blocks
-  cleanLayout = cleanLayout.replace(/({{\s*([^}]+)\s*}})/g, (match, fullMatch, varName) => {
-      let cleanName = varName.replace(/[{}]/g, '').trim().split('.').pop();
-      return `<span style="background-color:#e2e8f0;color:#334155;padding:2px 8px;border-radius:12px;font-family:sans-serif;font-size:11px;font-weight:600;margin:0 4px;display:inline-block;text-transform:uppercase;">${cleanName}</span>`;
-  });
-
   // Wrap in layout and identifiable div
   const wrappedContent = `<div id="v3-template-content">${modifiedHtml}</div>`;
-  let finalHtml = cleanLayout.replace('<!-- CONTENT -->', wrappedContent);
+  const plainHtml = layoutHtml.replace('<!-- CONTENT -->', wrappedContent);
+
+  // Compile the ENTIRE layout + content through Handlebars so the layout header/footer look real
+  let finalHtml = plainHtml;
+  try {
+     const template = Handlebars.compile(plainHtml);
+     finalHtml = template(window.__SAMPLE_DATA__);
+  } catch (e) {
+     console.error("Handlebars compilation failed", e);
+  }
 
   // Render to iframe
   const doc = previewFrame.contentWindow.document;
