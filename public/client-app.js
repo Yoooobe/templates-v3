@@ -205,12 +205,17 @@ function setupEditor(html) {
         }
     } else {
         let pureText = node.textContent.trim();
-        
-        if (isValidEditableText(pureText)) {
-            const allowedTags = ['H1', 'H2', 'H3', 'H4', 'H5', 'H6', 'P', 'SPAN', 'DIV'];
-            // Never make logic-heavy transactional tables or links directly editable
-            if (allowedTags.includes(node.tagName)) {
-               makeNodeEditable(node);
+        if (pureText.length > 0) {
+            if (isValidEditableText(pureText)) {
+                const allowedTags = ['H1', 'H2', 'H3', 'H4', 'H5', 'H6', 'P', 'SPAN', 'DIV'];
+                // Never make logic-heavy transactional tables or links directly editable
+                if (allowedTags.includes(node.tagName)) {
+                   makeNodeEditable(node);
+                } else if (node.tagName !== 'STYLE' && node.tagName !== 'SCRIPT') {
+                   node.classList.add('v3-not-editable');
+                }
+            } else if (node.tagName !== 'STYLE' && node.tagName !== 'SCRIPT') {
+               node.classList.add('v3-not-editable');
             }
         }
     }
@@ -270,7 +275,7 @@ function makeNodeEditable(node) {
             span.className = 'readonly-variable';
             // Escaping the Handlebars brackets so they survive Handlebars layout compilation!
             span.setAttribute('data-original-var', `\\${frag}`); 
-            span.style.cssText = "user-select:none;pointer-events:none;display:inline-block;vertical-align:baseline;background-color:#e2e8f0;color:#334155;padding:0px 4px;border-radius:4px;font-family:sans-serif;font-size:12px;font-weight:600;margin:0 4px;";
+            span.style.cssText = "user-select:none;pointer-events:none;display:inline-block;vertical-align:baseline;background-color:#e2e8f0;color:#64748b;padding:0px 4px;border-radius:4px;font-family:sans-serif;font-size:12px;font-weight:600;margin:0 4px;opacity:0.6;";
             span.textContent = evaluatedText;
             parent.insertBefore(span, textNode);
           } else if (frag.length > 0) {
@@ -378,18 +383,26 @@ function updatePreview() {
   // Inject editor styles into iframe
   const style = doc.createElement('style');
   style.innerHTML = `
+    .v3-not-editable {
+      opacity: 0.5 !important;
+      filter: grayscale(80%);
+      transition: opacity 0.2s;
+    }
     .v3-editable-node {
-      outline: none;
-      transition: outline 0.2s, background-color 0.2s;
+      outline: 2px dashed rgba(79, 70, 229, 0.4);
+      background-color: rgba(79, 70, 229, 0.05);
+      border-radius: 4px;
+      transition: all 0.2s;
+      position: relative;
     }
     .v3-editable-node:hover {
-      outline: 2px dashed #4f46e5;
-      background-color: rgba(79, 70, 229, 0.05);
+      outline: 2px solid #4f46e5;
+      background-color: rgba(79, 70, 229, 0.12);
       cursor: text;
     }
     .v3-editable-node:focus {
       outline: 2px solid #4f46e5;
-      background-color: rgba(79, 70, 229, 0.05);
+      background-color: #fff;
     }
   `;
   doc.head.appendChild(style);
